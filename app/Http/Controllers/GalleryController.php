@@ -1,18 +1,13 @@
 <?php namespace App\Http\Controllers;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Models\FHomeModel;
-use Session,DB;
-use Illuminate\Http\Request;
+use App\Enums\SystemsModuleType;
+use App\Models\Product;
 
 class GalleryController extends Controller {
 
 	public function index(){
-		$user = new FHomeModel();
-		$data['list_gallery'] = $user->getData('gallery',['lang'=>Session::get('lang')],'id','desc');
-		//dd($data['list_video']);
-		return view('frontend.gallery.home',$data);
-	}
+		$galleries = Product::whereType(SystemsModuleType::GALLERY)->public()->langs()->get();
 
+		return view('Gallery.index',compact('galleries'));
 	}
+}

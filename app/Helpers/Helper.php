@@ -1,27 +1,12 @@
 <?php
 
-use App\Enums\ActiveDisable;
-use App\Models\Lang;
 use App\Models\Photo;
-use App\Models\Setting;
 use App\Models\Tags;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PostLang;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-function __construct(){
-
-    if(!session()->has('lang')){
-        $lang = Lang::whereStatus(ActiveDisable::ACTIVE)->first();
-        $value = $lang ? $lang->value : config('app.locale');
-        session()->put('lang',$value);
-    }
-
-    if(!session()->has('setting')){
-        session()->put('setting', Setting::langs()->firstOrFail());
-    }
-}
 
 if(!function_exists('send_mail')){
     function send_email($template, $data, $email = null){
