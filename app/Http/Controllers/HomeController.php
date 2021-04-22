@@ -31,11 +31,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $session = new ProductSession();
+        $sessions = new ProductSession();
         $id = 1;
-        $sessions = $session->whereType('import')->whereColumn('amount_export','<','amount')->whereProductId($id)->oldest()->first();
-        dd($sessions);
-        //return response()->json(auth()->check());
+        $order = 11;
+        $price = 80000;
+        $quantity = 150;
+
+
 
         return view('Layouts.home');
     }

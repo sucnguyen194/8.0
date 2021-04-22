@@ -70,6 +70,7 @@ class Order extends Model
                 $amount = $amount - $cart->qty;
                 $session->product()->update(['amount' => $amount]);
 
+
             endforeach;
             //update công nọ user (khách hàng)
             $debt = $order->customer->debt + $order->debt;
