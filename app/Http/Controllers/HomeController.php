@@ -8,6 +8,7 @@ use App\Models\Alias;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Product;
+use App\Models\ProductSession;
 use App\Models\SiteSetting;
 use Session;
 
@@ -30,12 +31,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
-        $posts = Post::all();
-
+        $session = new ProductSession();
+        $id = 1;
+        $sessions = $session->whereType('import')->whereColumn('amount_export','<','amount')->whereProductId($id)->oldest()->first();
+        dd($sessions);
         //return response()->json(auth()->check());
 
-        return view('Layouts.home',compact('products','posts'));
+        return view('Layouts.home');
     }
 
     public function getAlias($alias)

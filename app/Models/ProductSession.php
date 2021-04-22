@@ -29,30 +29,37 @@ class ProductSession extends Model
     }
 
     public function admin(){
-        return $this->belongsTo(User::class,'user_create');
-    }
-    public function updateAmountSessionAfter($id, $quantity){
-        $session = new ProductSession();
-        $session = $session->whereType('import')->whereProductId($id)->latest()->first();
-        $amount =  $session->amount_export - abs($quantity);
-        if($amount >= 0){
-            $session->update([
-                'amount_export' => $amount,
-            ]);
-        }else{
-            $session->update([
-                'amount_export' => 0
-            ]);
-            $this->subUpdateAmountSessionAfter($session,abs($amount));
-        }
-        return $session;
+        return $this->belongsTo(Admin::class,'user_create');
     }
 
+    public function updateAmountSessionAfter($id, $quantity){
+        $session = new ProductSession();
+        if($quantity > 0){
+            $sessions = $session->whereType('import')->whereColumn('amount_export','<','amount')->whereProductId($id)->oldest()->first();
+            if(!$sessions){
+                $sessions = $session->whereType('import')->whereProductId($id)->latest()->first();
+            }
+            $amount = $sessions->amount_export - abs($quantity);
+            if($amount >= 0){
+                $sessions->update([
+                    'amount_export' => $amount,
+                ]);
+            }else{
+                $sessions->update([
+                    'amount_export' => 0
+                ]);
+                $this->subUpdateAmountSessionAfter($sessions,abs($amount));
+            }
+        }else{
+            $this->updateAmountSession($id, $quantity);
+        }
+
+        return $this;
+    }
     public function subUpdateAmountSessionAfter($item, $quantity){
 
         $session = $item->where('id','<',$item->id)->whereType('import')->whereProductId($item->product_id)->latest()->first();
-
-        $amount = $session->amount - $quantity;
+        $amount = $session->amount_export - $quantity;
         if($amount >= 0) {
             $session->update([
                 'amount_export' => $amount,
@@ -74,7 +81,7 @@ class ProductSession extends Model
                 $amount = $item->amount - $item->amount_export - abs($quantity);
                 if($amount >= 0){
                     $item->update([
-                        'amount_export' => $item->amount_export + $quantity
+                        'amount_export' => $item->amount_export + abs($quantity)
                     ]);
                 }else{
                     $item->update([

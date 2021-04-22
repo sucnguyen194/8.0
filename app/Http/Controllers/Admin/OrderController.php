@@ -59,7 +59,7 @@ class OrderController extends Controller
         if(auth()->id() > 1) $this->authorize('seller.export');
 
         $products = Product::selectRaw('id, name, amount')->public()->orderby('name', 'asc')->get();
-        $users = User::selectRaw('id,name,account,phone')->whereLever(LeverUser::USER)->orderByDesc('id')->get();
+        $users = User::selectRaw('id,name,account,phone')->orderByDesc('id')->get();
         $agencys = UserAgency::selectRaw('id, name, phone')->status()->orderByDesc('id')->get();
 
         $selected = Session::has('customer') ? Session::get('customer') : 0;
@@ -331,7 +331,8 @@ class OrderController extends Controller
         if(auth()->id() > 1) $this->authorize('seller.export');
         $product_session = new ProductSession();
         $session = ProductSession::find($id);
-        $product_session->updateAmountSessionAfter($session->product_id, $amount);
+
+        $product_session->updateAmountSessionAfter($session->product_id, $session->amount - $amount);
 
         if(!$session) return 'error';
 

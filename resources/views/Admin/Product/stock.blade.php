@@ -165,7 +165,7 @@
                                 <td>{{number_format($item->price) ?? 0}}</td>
                                 @endif
                                 <td>
-                                    <a href="{{route('admin.users.index',['id' => $item->admin->id ?? 0])}}" target="_blank" class="{{$item->type == 'import' ? 'text-default' : "text-primary"}}" >{{$item->admin->name ?? "#".$item->admin->id}}</a>
+                                    <a href="{{route('admin.admins.index',['id' => $item->admin->id ?? 0])}}" target="_blank" class="{{$item->type == 'import' ? 'text-default' : "text-primary"}}" >{{$item->admin->name ?? "#".$item->admin->id}}</a>
                                 </td>
                                 <td>
                                     @if($item->type =='export')
