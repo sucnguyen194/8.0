@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\CategoryType;
 use App\Enums\SystemsModuleType;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Alias;
 use App\Models\AttributeCategory;
 use App\Models\Category;
@@ -53,7 +54,7 @@ class ProductController extends Controller
             ->orderByDesc('created_at')->get();
         $categories = Category::whereLang($lang)->whereType(CategoryType::PRODUCT_CATEGORY)->public()->get();
         $langs =  Lang::get();
-        $users = User::where('lever','>=',\Auth::user()->lever)->get();
+        $users = Admin::get();
 
         return view('Admin.Product.list',compact('products','categories','langs','users'));
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\CategoryType;
 use App\Enums\SystemsModuleType;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Lang;
 use App\Models\User;
@@ -19,7 +20,7 @@ class ProductCategoryController extends Controller
      */
     public function index()
     {
-        if(auth()->id() > 1) $this->authorize('product.create');
+        if(auth()->id() > 1) $this->authorize('product.view');
 
         $lang = isset(request()->lang) ? request()->lang : session()->get('lang');
 
@@ -38,7 +39,7 @@ class ProductCategoryController extends Controller
             ->orderByDesc('id')->get();
 
         $langs =  Lang::all();
-        $users = User::where('lever','>=', Auth::user()->lever)->get();
+        $users = Admin::get();
 
         return view('Admin.Product.category.index',compact('categories','langs','users'));
     }
@@ -50,7 +51,7 @@ class ProductCategoryController extends Controller
      */
     public function create()
     {
-        authorize(SystemsModuleType::PRODUCT_CATEGORY);
+        if(auth()->id() > 1) $this->authorize('product.create');
         $categories = Category::whereType(CategoryType::PRODUCT_CATEGORY)->langs()->orderByDesc('id')->get();
 
         return view('Admin.Product.category.create',compact('categories'));
@@ -86,7 +87,7 @@ class ProductCategoryController extends Controller
      */
     public function edit(Category $category){
 
-        authorize(SystemsModuleType::PRODUCT_CATEGORY);
+        if(auth()->id() > 1) $this->authorize('product.edit');
         $lang = $category->lang;
         $type = SystemsModuleType::PRODUCT_CATEGORY;
         $categories = Category::whereLang($lang)->whereType($type)->whereNotIn('id',[$category->id])->orderByDesc('id')->get();
@@ -104,6 +105,8 @@ class ProductCategoryController extends Controller
     }
 
     public function lang($language, $id){
+        if(auth()->id() > 1) $this->authorize('product.create');
+
         if(!Lang::whereValue($language)->count())
             return flash('Ngôn ngữ chưa được cấu hình', 3);
 

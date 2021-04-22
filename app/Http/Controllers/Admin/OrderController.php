@@ -6,6 +6,7 @@ use App\Enums\LeverUser;
 use App\Enums\ProductSessionType;
 use App\Enums\SystemsModuleType;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductSession;
@@ -42,9 +43,10 @@ class OrderController extends Controller
             })
             ->get();
 
-        $users = User::where('lever', '>', LeverUser::SUPPERADMIN)->get();
+        $users = User::get();
+        $admins = Admin::get();
 
-        return view('Admin.Order.list',compact('orders','users'));
+        return view('Admin.Order.list',compact('orders','users','admins'));
     }
 
     /**
@@ -158,8 +160,8 @@ class OrderController extends Controller
     {
         if(auth()->id() > 1) $this->authorize('seller.export');
 
-        $users = User::selectRaw('id,name,account')->whereLever(LeverUser::ADMIN)->get();
-        $customers = User::selectRaw('id,name,account,phone')->whereLever(LeverUser::USER)->get();
+        $users = Admin::selectRaw('id,name,email')->get();
+        $customers = User::selectRaw('id,name,account,phone')->get();
         $agencys = UserAgency::status()->get()->pluck('name','id','phone');
         $products = Product::selectRaw('id,name,amount, price')->whereNotIn('id', $order->sessions()->pluck('product_id')->toArray())->public()->orderby('name', 'asc')->get();
         $array = $products->pluck('id')->toArray();
@@ -533,8 +535,7 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         if(auth()->id() > 1) $this->authorize('seller.export');
-        if($order->sessions->count())
-            return flash('Bạn không thể thực hiện hành động này!',3);
+
         $order->delete();
         return flash('Xóa thành công!',1);
     }

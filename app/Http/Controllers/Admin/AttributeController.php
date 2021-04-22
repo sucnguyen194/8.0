@@ -17,7 +17,7 @@ class AttributeController extends Controller
      */
     public function index()
     {
-        authorize(SystemsModuleType::ATTRIBUTE);
+        if(auth()->id() > 1) $this->authorize('product.view');
         $category = AttributeCategory::public()->get();
         $attribute = Attribute::with(['category'])
             ->when(\request()->category,function($q){
@@ -38,7 +38,7 @@ class AttributeController extends Controller
      */
     public function create()
     {
-        authorize(SystemsModuleType::ATTRIBUTE);
+        if(auth()->id() > 1) $this->authorize('product.create');
 
         $category = AttributeCategory::public()->get();
 
@@ -53,7 +53,7 @@ class AttributeController extends Controller
      */
     public function store(Request $request)
     {
-        authorize(SystemsModuleType::ATTRIBUTE);
+        if(auth()->id() > 1) $this->authorize('product.create');
 
         $request->validate([
             'data.name' => 'required|unique:attributes,name',
@@ -85,7 +85,7 @@ class AttributeController extends Controller
      */
     public function edit(Attribute $attribute)
     {
-        authorize(SystemsModuleType::ATTRIBUTE);
+        if(auth()->id() > 1) $this->authorize('product.edit');
 
         $category = AttributeCategory::public()->get();
 
@@ -101,7 +101,7 @@ class AttributeController extends Controller
      */
     public function update(Request $request, Attribute $attribute)
     {
-        authorize(SystemsModuleType::ATTRIBUTE);
+        if(auth()->id() > 1) $this->authorize('product.edit');
 
         $request->validate([
             'data.name' => 'required|unique:attributes,name,'.$attribute->id,
@@ -120,7 +120,7 @@ class AttributeController extends Controller
      */
     public function destroy(Attribute $attribute)
     {
-        authorize(SystemsModuleType::ATTRIBUTE);
+        if(auth()->id() > 1) $this->authorize('product.destroy');
         $attribute->delete();
         return flash('Xóa thành công!', 1);
     }

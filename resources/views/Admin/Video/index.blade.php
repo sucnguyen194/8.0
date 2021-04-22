@@ -48,17 +48,17 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-lg-2 col-md-4 mb-lg-0 mb-md-0">
+                            <div class="col-lg-3 col-md-4 mb-lg-0 mb-md-0">
                                 <label>Thành viên</label>
                                 <select class="form-control" data-toggle="select2" name="user">
                                     <option value="">-----</option>
                                     @foreach($users as $item)
-                                        <option value="{{$item->id}}" {{request()->user == $item->id ? "selected" : ""}}> {{$item->account}}</option>
+                                        <option value="{{$item->id}}" {{request()->user == $item->id ? "selected" : ""}}>[{{$item->email}}] {{$item->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <div class="col-lg-2 col-md-4 mb-lg-0 mb-md-0">
+                            <div class="col-lg-3 col-md-4 mb-lg-0 mb-md-0">
                                 <label class="ql-color-white hidden-xs" style="opacity: 0">-</label>
                                 <div class="mb-2 mb-lg-0 mb-md-0">
                                     <button class="btn btn-primary waves-effect waves-light" type="submit"><span class="icon-button"><i class="fe-search"></i></span> Tìm kiếm</button>

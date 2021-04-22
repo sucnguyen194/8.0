@@ -26,8 +26,8 @@
                                 <label>Người tạo đơn</label>
                                 <select class="form-control" data-toggle="select2" name="user">
                                     <option value="">-----</option>
-                                    @foreach($users->where('lever',\App\Enums\LeverUser::ADMIN) as $item)
-                                        <option value="{{$item->id}}" {{request()->user == $item->id ? "selected" : ""}}> {{$item->name ?? $item->account}}</option>
+                                    @foreach($admins as $item)
+                                        <option value="{{$item->id}}" {{request()->user == $item->id ? "selected" : ""}}>[{{$item->email}}] {{$item->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -86,21 +86,19 @@
                                 <tr>
                                     <td >{{$item->id}}</td>
                                     <td>{{$item->created_at->format('d/m/Y H:i')}}</td>
-                                    <td><a href="{{route('admin.users.index',['id' => @$item->user->id ?? 0])}}" target="_blank">{{@$item->user->name ?? @$item->user->account}}</a> </td>
+                                    <td><a href="{{route('admin.admins.index',['id' => @$item->user->id ?? 0])}}" target="_blank">{{@$item->user->name ?? @$item->user->account}}</a> </td>
                                     <td><a href="{{route('admin.agencys.index',['id' => @$item->agency->id ?? 0])}}" target="_blank">{{@$item->agency->name ?? 'Tên trống hoặc đã xóa'}}</a>  @if(@$item->agency->phone)[{{@$item->agency->phone}}] @endif</td>
                                     <td>{{number_format($item->total)}}</td>
                                     <td>{{number_format($item->checkout)}}</td>
                                     <td>{{number_format($item->debt)}}</td>
                                     <td>
                                         <a href="{{route('admin.imports.show',$item)}}" class="btn btn-primary waves-effect waves-light">
-                                            <span class="icon-button"><i class="pe-7s-magic-wand"></i> </span>Chi tiết</a>
-                                        @if(!$item->sessions->count())
+                                           Chi tiết</a>
                                         <form method="post" action="{{route('admin.imports.destroy',$item)}}" class="d-inline-block">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-warning waves-effect waves-light" onclick="return confirm('Bạn có chắc muốn xóa?');"><span class="icon-button"><i class="fe-x"></i></span></button>
                                         </form>
-                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

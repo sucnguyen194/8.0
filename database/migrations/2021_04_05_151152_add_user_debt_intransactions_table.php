@@ -14,7 +14,7 @@ class AddUserDebtIntransactionsTable extends Migration
     public function up()
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->integer('user_debt')->after('agency_id');
+            $table->integer('user_debt')->after('agency_id')->default(0);
         });
     }
 

@@ -6,6 +6,7 @@ use App\Enums\LeverUser;
 use App\Enums\ProductSessionType;
 use App\Enums\SystemsModuleType;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Import;
 use App\Models\Product;
 use App\Models\ProductSession;
@@ -40,9 +41,9 @@ class ImportController extends Controller
                 $q->whereBetween('created_at', [$range['from']->startOfDay(), $range['to']->endOfDay()]);
             })
             ->get();
-        $users = User::selectRaw('id,name')->where('lever','>',LeverUser::SUPPERADMIN)->get();
+        $admins = Admin::selectRaw('id,name,email')->get();
 
-        return view('Admin.Import.index',compact('products','agencys','imports','users'));
+        return view('Admin.Import.index',compact('products','agencys','imports','admins'));
     }
     /**
      * Show the form for creating a new resource.
@@ -306,8 +307,9 @@ class ImportController extends Controller
     public function destroy(Import $import)
     {
         if(auth()->id() > 1) $this->authorize('seller.import');
-        if(!$import->sessions->count())
-            $import->delete();
+
+        $import->delete();
+
         return flash('Xóa thành công!', 1);
     }
 }

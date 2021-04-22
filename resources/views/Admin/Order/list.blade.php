@@ -41,8 +41,8 @@
                                 <label>Người tạo</label>
                                 <select class="form-control" data-toggle="select2" name="user_create">
                                     <option value="">-----</option>
-                                    @foreach($users->where('lever',\App\Enums\LeverUser::ADMIN) as $item)
-                                        <option value="{{$item->id}}" {{request()->user_create == $item->id ? "selected" : ""}}> {{$item->name ?? $item->account}}</option>
+                                    @foreach($admins as $item)
+                                        <option value="{{$item->id}}" {{request()->user_create == $item->id ? "selected" : ""}}>[{{$item->email}}] {{$item->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -51,8 +51,8 @@
                                 <label>Khách hàng</label>
                                 <select class="form-control" data-toggle="select2" name="customer">
                                     <option value="">-----</option>
-                                    @foreach($users->where('lever',\App\Enums\LeverUser::USER) as $item)
-                                        <option value="{{$item->id}}" {{request()->customer == $item->id ? "selected" : ""}}> {{$item->name ?? $item->account}}</option>
+                                    @foreach($users as $item)
+                                        <option value="{{$item->id}}" {{request()->customer == $item->id ? "selected" : ""}}>[{{$item->email}}] {{$item->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -165,13 +165,11 @@
                                     <td>
                                         <a href="{{route('admin.orders.edit',$item)}}" class="btn btn-primary waves-effect waves-light">Chi tiết</a>
 
-                                        @if(!$item->sessions->count())
                                         <form method="post" action="{{route('admin.orders.destroy',$item)}}" class="d-inline-block">
                                             @method('DELETE')
                                             @csrf
                                             <button type="submit" onclick="return confirm('Bạn có chắc muốn xóa?');" class="btn btn-warning waves-effect waves-light"><span class="icon-button"><i class="fe-x"></i></span></button>
                                         </form>
-                                        @endif
                                         <a href="#print-order"  data-toggle="modal" data-target="#print-order" v-on:click="printCart({{$item->id}})" class="btn btn-purple waves-effect waves-light">In đơn</a>
                                     </td>
                                 </tr>

@@ -246,157 +246,157 @@
             <!-- end row -->
         </form>
     </div>
-<script>
+    <script>
 
-   var app = new Vue({
-        el:"#import-product",
-        data:{
-            agencys: @json($agencys),
-            products: @json($products),
-            carts: @json(Cart::instance('import')->content()->sort()),
-            total: {{str_replace(',','',Cart::subtotal(0))}},
+        var app = new Vue({
+            el:"#import-product",
+            data:{
+                agencys: @json($agencys),
+                products: @json($products),
+                carts: @json(Cart::instance('import')->content()->sort()),
+                total: {{str_replace(',','',Cart::subtotal(0))}},
 
-            product_id: 0,
-            agency_id: {{$agency}},
-            product:{
-                id: 0,
-                name: 0,
-                price_in: 0,
-                price_buy:0,
-                max: 0,
-            },
-            cart:{
-                name: 0,
-                amount : 0,
+                product_id: 0,
+                agency_id: {{$agency}},
+                product:{
+                    id: 0,
+                    name: 0,
+                    price_in: 0,
+                    price_buy:0,
+                    max: 0,
+                },
+                cart:{
+                    name: 0,
+                    amount : 0,
+                    price: 0,
+                    rowId: 0,
+                },
+                amount : 1,
                 price: 0,
-                rowId: 0,
+                checkout: 0,
+                price_in: 0,
             },
-            amount : 1,
-            price: 0,
-            checkout: 0,
-            price_in: 0,
-        },
-        methods:{
-            destroyItem:function(rowId){
-                if(confirm('Xóa sản phẩm')) {
-                    fetch('{{route('admin.ajax.destroy.item.import',':rowId')}}'.replace(":rowId", rowId)).then(function (reponse) {
-                        return reponse.json().then(function (data) {
-                            app.carts = data.cart;
-                            app.total = data.total.replaceAll(',','');
-                            flash('success', 'Xóa sản phẩm thành công!');
-                        });
-                    })
-                }
-            },
-            addCart: function(){
-                fetch('{{route('admin.ajax.import.product',[':id',':amount',':price'])}}'.replace(":id",this.product_id).replace(":amount",this.amount).replace(":price",this.price_in)).then(function(reponse){
-                    return reponse.json().then(function(data){
-                        app.carts = data.cart;
-                        app.total = data.total.replaceAll(',','');
-                        flash('success','Thêm sản phẩm thành công!');
-                    });
-                })
-            },
-            getItem: function(rowId){
-                fetch('{{route('admin.ajax.get.item.import',':rowId')}}'.replace(':rowId',rowId)).then(function (reponse){
-                    return reponse.json().then(function(data){
-                        app.cart.name = data.name;
-                        app.cart.amount = data.qty;
-                        app.cart.price = data.price;
-                        app.cart.rowId = data.rowId;
-                    });
-                })
-            },
-            updateItemCart:function (rowId,amount,price){
-                if(confirm('Xác nhận thông tin?')) {
-                    fetch('{{route('admin.ajax.update.item.import',[':rowId',':amount',':price'])}}'.replace(':rowId', rowId).replace(':amount', amount).replace(':price', price)).then(function (response) {
-                        return response.json().then(function (data) {
-                            app.carts = data.cart;
-                            app.total = data.total.replaceAll(',','');
-                            $('#item-cart').modal('hide');
-                            flash('success', 'Cập nhật thành công!');
+            methods:{
+                destroyItem:function(rowId){
+                    if(confirm('Xóa sản phẩm')) {
+                        fetch('{{route('admin.ajax.destroy.item.import',':rowId')}}'.replace(":rowId", rowId)).then(function (reponse) {
+                            return reponse.json().then(function (data) {
+                                app.carts = data.cart;
+                                app.total = data.total.replaceAll(',','');
+                                flash({'message': 'Xóa sản phẩm thành công!','type': 'success'});
+                            });
                         })
+                    }
+                },
+                addCart: function(){
+                    fetch('{{route('admin.ajax.import.product',[':id',':amount',':price'])}}'.replace(":id",this.product_id).replace(":amount",this.amount).replace(":price",this.price_in)).then(function(reponse){
+                        return reponse.json().then(function(data){
+                            app.carts = data.cart;
+                            app.total = data.total.replaceAll(',','');
+                            flash({'message': 'Thêm sản phẩm thành công!','type': 'success'});
+                        });
                     })
-                }
-            },
+                },
+                getItem: function(rowId){
+                    fetch('{{route('admin.ajax.get.item.import',':rowId')}}'.replace(':rowId',rowId)).then(function (reponse){
+                        return reponse.json().then(function(data){
+                            app.cart.name = data.name;
+                            app.cart.amount = data.qty;
+                            app.cart.price = data.price;
+                            app.cart.rowId = data.rowId;
+                        });
+                    })
+                },
+                updateItemCart:function (rowId,amount,price){
+                    if(confirm('Xác nhận thông tin?')) {
+                        fetch('{{route('admin.ajax.update.item.import',[':rowId',':amount',':price'])}}'.replace(':rowId', rowId).replace(':amount', amount).replace(':price', price)).then(function (response) {
+                            return response.json().then(function (data) {
+                                app.carts = data.cart;
+                                app.total = data.total.replaceAll(',','');
+                                $('#item-cart').modal('hide');
+                                flash({'message': 'Cập nhật thành công!','type': 'success'});
+                            })
+                        })
+                    }
+                },
 
-            choiseProduct:function(){
-                fetch("{{route('admin.ajax.choise.product',[':id',':agency'])}}".replace(":id",this.product_id).replace(":agency",this.agency_id))
-                    .then(function (response){
-                        return response.json().then(function(data){
-                            app.product.name = data.product.name;
-                            app.product.price_in = data.price;
-                            app.price_in = data.price_in;
-                            app.amount = 1;
-                        });
-                    })
+                choiseProduct:function(){
+                    fetch("{{route('admin.ajax.choise.product',[':id',':agency'])}}".replace(":id",this.product_id).replace(":agency",this.agency_id))
+                        .then(function (response){
+                            return response.json().then(function(data){
+                                app.product.name = data.product.name;
+                                app.product.price_in = data.price;
+                                app.price_in = data.price_in;
+                                app.amount = 1;
+                            });
+                        })
+                },
+                choiseAgency:function(){
+                    fetch("{{route('admin.ajax.choise.agency',[':id',':product'])}}".replace(":id",this.agency_id).replace(":product",this.product_id))
+                        .then(function (response){
+                            return response.json().then(function(data){
+                                app.agency_id = data.agency;
+                                app.product.name = data.product.name;
+                                app.product.price_in = data.price;
+                                app.price_in = data.price_in;
+                                app.amount = 1;
+                            });
+                        })
+                }
             },
-            choiseAgency:function(){
-                fetch("{{route('admin.ajax.choise.agency',[':id',':product'])}}".replace(":id",this.agency_id).replace(":product",this.product_id))
-                    .then(function (response){
-                        return response.json().then(function(data){
-                            app.agency_id = data.agency;
-                            app.product.name = data.product.name;
-                            app.product.price_in = data.price;
-                            app.price_in = data.price_in;
-                            app.amount = 1;
-                        });
-                    })
+            wacth:{
+                product_id: function(val){
+                    this.product_id = val;
+                    if(val > 0 && this.customer > 0){
+                        this.choiseProduct();
+                    }
+                },
+                agency_id: function(val){
+                    this.agency_id = val;
+                    if(val > 0 && this.product_id > 0){
+                        this.choiseProduct();
+                    }
+                },
+                amount: function(val){
+                    this.amount = val;
+                },
+                price: function(val){
+                    this.price = val;
+                },
+                checkout:function(val){
+                    this.checkout = val;
+                },
+                price_in:function (val){
+                    this.price_in = val;
+                },
+            },
+            computed:{
+                totalall:function(){
+                    return number_format(this.total);
+                },
+                detb: function(){
+                    return Number(this.total) - Number(this.checkout);
+                },
+                provisional:function(){
+                    return this.amount * this.price_in;
+                },
             }
-        },
-        wacth:{
-            product_id: function(val){
-                this.product_id = val;
-                if(val > 0 && this.customer > 0){
-                    this.choiseProduct();
-                }
-            },
-            agency_id: function(val){
-                this.agency_id = val;
-                if(val > 0 && this.product_id > 0){
-                    this.choiseProduct();
-                }
-            },
-            amount: function(val){
-                this.amount = val;
-            },
-            price: function(val){
-                this.price = val;
-            },
-            checkout:function(val){
-                this.checkout = val;
-            },
-            price_in:function (val){
-                this.price_in = val;
-            },
-        },
-        computed:{
-            totalall:function(){
-                return number_format(this.total);
-            },
-            detb: function(){
-                return Number(this.total) - Number(this.checkout);
-            },
-            provisional:function(){
-                return this.amount * this.price_in;
-            },
+        })
+        jQuery(document).ready(function($) {
+            js_select2();
+        })
+        function js_select2(){
+            return $("#agencys, #products").select2()
+                .on("select2:select", e => {
+                    const event = new Event("change", { bubbles: true, cancelable: true });
+                    e.params.data.element.parentElement.dispatchEvent(event);
+                })
+                .on("select2:unselect", e => {
+                    const event = new Event("change", { bubbles: true, cancelable: true });
+                    e.params.data.element.parentElement.dispatchEvent(event);
+                });
         }
-    })
-    jQuery(document).ready(function($) {
-        js_select2();
-    })
-   function js_select2(){
-       return $("#agencys, #products").select2()
-           .on("select2:select", e => {
-               const event = new Event("change", { bubbles: true, cancelable: true });
-               e.params.data.element.parentElement.dispatchEvent(event);
-           })
-           .on("select2:unselect", e => {
-               const event = new Event("change", { bubbles: true, cancelable: true });
-               e.params.data.element.parentElement.dispatchEvent(event);
-           });
-   }
-</script>
+    </script>
 @stop
 
 @section('javascript')

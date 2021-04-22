@@ -16,7 +16,7 @@ class AttributeCategoryController extends Controller
      */
     public function index()
     {
-        authorize(SystemsModuleType::ATTRIBUTE_CATEGORY);
+        if(auth()->id() > 1) $this->authorize('product.view');
 
         $category = AttributeCategory::orderby('sort','asc')->get();
 
@@ -30,7 +30,7 @@ class AttributeCategoryController extends Controller
      */
     public function create()
     {
-        authorize(SystemsModuleType::ATTRIBUTE_CATEGORY);
+        if(auth()->id() > 1) $this->authorize('product.create');
 
         return view('Admin.Product.Attribute.Category.add');
     }
@@ -43,7 +43,7 @@ class AttributeCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        authorize(SystemsModuleType::ATTRIBUTE_CATEGORY);
+        if(auth()->id() > 1) $this->authorize('product.create');
 
         $request->validate([
            'data.name' => 'required|unique:attribute_categorys,name',
@@ -74,7 +74,7 @@ class AttributeCategoryController extends Controller
      */
     public function edit(AttributeCategory $attribute_category)
     {
-        authorize(SystemsModuleType::ATTRIBUTE_CATEGORY);
+        if(auth()->id() > 1) $this->authorize('product.edit');
 
         return view('Admin.Product.Attribute.Category.edit',compact('attribute_category'));
     }
@@ -88,7 +88,7 @@ class AttributeCategoryController extends Controller
      */
     public function update(Request $request, AttributeCategory $attribute_category)
     {
-        authorize(SystemsModuleType::ATTRIBUTE_CATEGORY);
+        if(auth()->id() > 1) $this->authorize('product.edit');
 
         $request->validate([
             'data.name' => 'required|unique:attribute_categorys,name,'.$attribute_category->id,
@@ -108,7 +108,7 @@ class AttributeCategoryController extends Controller
      */
     public function destroy(AttributeCategory $attribute_category)
     {
-        authorize(SystemsModuleType::ATTRIBUTE_CATEGORY);
+        if(auth()->id() > 1) $this->authorize('product.destroy');
 
         $attribute_category->delete();
 
