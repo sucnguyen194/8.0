@@ -53,7 +53,7 @@
                                 <select class="form-control" data-toggle="select2" name="user">
                                     <option value="">-----</option>
                                     @foreach($user as $item)
-                                        <option value="{{$item->id}}" {{request()->user == $item->id ? "selected" : ""}}>[{{$item->email}}] {{$item->name}}</option>
+                                        <option value="{{$item->id}}" {{request()->user == $item->id ? "selected" : ""}}> {{$item->account}}</option>
                                     @endforeach
                                 </select>
                             </div>
