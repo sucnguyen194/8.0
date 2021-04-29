@@ -70,7 +70,6 @@ class Order extends Model
                     'revenue' => $cart->options->revenue,
                     'type' => ProductSessionType::getKey(ProductSessionType::export)
                 ]);
-                
                 //update số lượng sản phẩm được nhập
                 $amount = $session->product->amount;
                 $amount = $amount - $cart->qty;

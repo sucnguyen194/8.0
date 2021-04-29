@@ -35,15 +35,15 @@ class Product extends Model
     }
 
     public function sessions(){
-        return $this->hasMany(ProductSession::class,'product_id');
+        return $this->hasMany(ProductSession::class);
     }
 
     public function imports(){
-        return $this->hasMany(ProductSession::class,'product_id')->whereType(ProductSessionType::getKey(ProductSessionType::import));
+        return $this->hasMany(ProductSession::class)->whereType(ProductSessionType::getKey(ProductSessionType::import));
     }
 
     public function exports(){
-        return $this->hasMany(ProductSession::class,'product_id')->whereType(ProductSessionType::getKey(ProductSessionType::export));
+        return $this->hasMany(ProductSession::class)->whereType(ProductSessionType::getKey(ProductSessionType::export));
     }
 
     public function user(){
