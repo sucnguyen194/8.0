@@ -36,7 +36,7 @@
                             <th>SĐT</th>
                             <th>Địa chỉ</th>
                             <th>Trạng thái</th>
-                            <th>Hành động</th>
+                            <th width="200">Hành động</th>
                         </tr>
                         </thead>
 

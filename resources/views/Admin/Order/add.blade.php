@@ -60,7 +60,7 @@
                                     <tr>
                                         <th>Tên sản phẩm</th>
                                         <th>Số lượng</th>
-                                        <th>Giá bán</th>
+                                        <th width="300">Giá bán</th>
                                         <th>Thành tiền</th>
                                         <th>Tiền lãi</th>
                                         <th>Hành động</th>

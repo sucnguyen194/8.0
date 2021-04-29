@@ -34,7 +34,9 @@ class PageController extends Controller
             ->orderByDesc('id')->get();
 
         $langs =  Lang::get();
-        $users = Admin::get();
+        $users = Admin::when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Page.index', compact('posts','langs','users'));
     }

@@ -31,7 +31,9 @@ class ContactController extends Controller
             ->whereRepId(0)
             ->orderByDesc('id')->get();
 
-        $user = Admin::get();
+        $user = Admin::when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Contact.list',compact('contact','user'));
     }

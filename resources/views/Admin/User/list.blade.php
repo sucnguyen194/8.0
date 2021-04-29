@@ -31,12 +31,12 @@
                         <thead>
                         <tr>
                             <th colspan="1">ID</th>
-                            <th>Tài khoản</th>
-                            <th>Công nợ</th>
                             <th>Email</th>
+                            <th>Tên KH</th>
+                            <th>Công nợ</th>
                             <th>SĐT</th>
-                            <th>Địa chỉ</th>
-                            <th>Hành động</th>
+                            <th width="200">Địa chỉ</th>
+                            <th width="200">Hành động</th>
                         </tr>
                         </thead>
 
@@ -45,9 +45,9 @@
                         @foreach($user as $item)
                         <tr>
                             <td >{{$item->id}}</td>
-                            <td>{{$item->name ?? $item->account}}</td>
-                            <td>{{number_format($item->debt)}}</td>
                             <td>{{$item->email}}</td>
+                            <td>{{$item->name}}</td>
+                            <td>{{number_format($item->debt)}}</td>
                             <td>{{$item->phone}}</td>
                             <td>{{$item->address}}</td>
                             <td>

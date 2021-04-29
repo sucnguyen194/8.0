@@ -6,6 +6,7 @@ use App\Enums\AliasType;
 use App\Enums\SystemsModuleType;
 use App\Models\Alias;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\ProductSession;
@@ -32,14 +33,67 @@ class HomeController extends Controller
     public function index()
     {
         $sessions = new ProductSession();
-        $id = 1;
-        $order = 11;
-        $price = 80000;
-        $quantity = 150;
+        $order = ProductSession::find(32);
 
-
+        dd($order);
 
         return view('Layouts.home');
+    }
+    public function subUpdateAmountSession($item, $quantity , $order = null){
+
+        $session = $item->where('id','>',$item->id)->whereType('import')->whereProductId($item->product_id)->oldest()->first();
+        if($session) $order->createOrderSessions($session->id);
+
+        $amount = $session->amount - $quantity;
+        if($amount >= 0) {
+            $session->update([
+                'amount_export' => $session->amount_export + $quantity
+            ]);
+        }else{
+            $session->update([
+                'amount_export' => $session->amount
+            ]);
+            return $this->subUpdateAmountSession($session,abs($amount), $order);
+        }
+    }
+    public function updateAmountSessionAfter($product_id, $quantity, $order = null){
+        $session = new ProductSession();
+        $sessions = $session->whereProductId($product_id)->whereHas('orderSessions',function($q) use ($order){
+            $q->whereOrderId($order);
+        })->oldest()->first();
+
+        $amount = $sessions->amount_export - abs($quantity);
+        if($amount >= 0){
+            $sessions->update([
+                'amount_export' => $amount,
+            ]);
+        }else{
+            $sessions->update([
+                'amount_export' => $sessions->amount
+            ]);
+            $this->subUpdateAmountSessionAfter($sessions,abs($amount));
+        }
+    }
+    public function subUpdateAmountSessionAfter($item, $quantity){
+
+        $session = ProductSession::where('id','>',$item->id)->whereType('import')->whereProductId($item->product_id)->oldest()->first();
+
+        if($session){
+            $amount = $session->amount_export - $quantity;
+            if($amount >= 0) {
+                $session->update([
+                    'amount_export' => $amount,
+                ]);
+            }else{
+                $session->update([
+                    'amount_export' => $session->amount
+                ]);
+                return $this->subUpdateAmountSessionAfter($session,abs($amount));
+            }
+        }else{
+            return $this->updateAmountSession($item->product_id, abs($quantity));
+        }
+
     }
 
     public function getAlias($alias)

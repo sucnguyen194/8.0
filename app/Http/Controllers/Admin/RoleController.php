@@ -18,7 +18,9 @@ class RoleController extends Controller
     {
         if(auth()->id() > 1) $this->authorize('roles.view');
 
-        $roles = Role::get();
+        $roles = Role::when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Role.index', compact('roles'));
     }

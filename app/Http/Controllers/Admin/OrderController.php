@@ -44,7 +44,9 @@ class OrderController extends Controller
             ->get();
 
         $users = User::get();
-        $admins = Admin::get();
+        $admins = Admin::when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Order.list',compact('orders','users','admins'));
     }
@@ -249,6 +251,7 @@ class OrderController extends Controller
                 $discount = $request->discount;
                 $total = str_replace(',','',Cart::instance('export_'.$order->id)->subtotal(0));
 
+                $sessions = new ProductSession();
                 foreach(Cart::instance('export_'.$order->id)->content() as $cart):
                     $session = ProductSession::create([
                         'order_id' => $order->id,
@@ -261,7 +264,7 @@ class OrderController extends Controller
                         'revenue' => $cart->options->revenue,
                         'type' => ProductSessionType::getKey(ProductSessionType::export)
                     ]);
-
+                    $sessions->updateAmountSession($cart->id, $cart->qty, $order);
                     //update số lượng sản phẩm được nhập
                     $amount = $session->product->amount;
                     $amount = $amount - $cart->qty;
@@ -291,21 +294,6 @@ class OrderController extends Controller
                     Session::forget('export_product');
                     Cart::instance('export_'.$order->id)->destroy();
 
-
-//                $debt = ($order->customer->debt - $order->debt) + ($order->total - $transport - $checkout);
-                //update công nợ của khách hàng
-//                $order->customer()->update([
-//                    'debt' => $debt,
-//                ]);
-                //$order->customer->increaseBalance(,'Cập nhật đơn hàng #'.$order->id, $order);
-                //update orders
-//                $revenue = $order->sessions()->sum('revenue');
-//                $order->update([
-//                   'checkout' => $checkout,
-//                   'transport' => $transport,
-//                   'debt' => $order->total - $checkout,
-//                   'revenue' => $revenue
-//                ]);
                 return flash('Cập nhật thành công!',1);
                 break;
             case 'save':
@@ -329,12 +317,13 @@ class OrderController extends Controller
     }
     public function updateItemSession($id, $amount, $price, $revenue){
         if(auth()->id() > 1) $this->authorize('seller.export');
+
         $product_session = new ProductSession();
         $session = ProductSession::find($id);
-
-        $product_session->updateAmountSessionAfter($session->product_id, $session->amount - $amount);
-
+        $order = Order::find($session->order_id);
         if(!$session) return 'error';
+
+        $product_session->updateAmountSessionEdit($session->product_id, $amount, $order);
 
         //update số lượng sản phẩm
         $session->product()->update([
@@ -374,7 +363,7 @@ class OrderController extends Controller
         if(!$session) return 'error';
 
         $product_session = new ProductSession();
-        $product_session->updateAmountSessionAfter($session->product_id, $session->amount);
+        $product_session->updateAmountSessionDelete($session->product_id, $session->amount,$session->export);
         //update số lượng sản phẩm
         if($session->product){
             $session->product()->update([
@@ -403,6 +392,7 @@ class OrderController extends Controller
 
         $data['order'] = $session->export()->first();
         $data['session'] = $session->export->sessions()->with('product')->get();
+        $data['products'] = Product::selectRaw('id,name,amount, price')->whereNotIn('id', $data['order']->sessions()->pluck('product_id')->toArray())->public()->orderby('name', 'asc')->get();
 
         return $data;
     }
@@ -503,7 +493,8 @@ class OrderController extends Controller
     }
     public function getRevenueSession($id,$quantity,$price){
         if(auth()->id() > 1) $this->authorize('seller.export');
-        $item = ProductSession::where('amount','>','amount_export')->whereProductId($id)->whereType('import')->oldest()->first();
+
+        $item = ProductSession::whereColumn('amount','>','amount_export')->whereProductId($id)->whereType('import')->oldest()->first();
 
         $amount = $item->amount - abs($quantity);
         if($amount >= 0){
@@ -514,7 +505,6 @@ class OrderController extends Controller
         }
         return response()->json($revenue);
     }
-
     public function sumRevenueSession($item, $quantity, $price){
         if(auth()->id() > 1) $this->authorize('seller.export');
         $session = $item->where('id','>',$item->id)->whereProductId($item->product_id)->whereType('import')->oldest()->first();

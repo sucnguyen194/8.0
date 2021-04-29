@@ -46,7 +46,6 @@ class UserController extends Controller
         if(auth()->id() > 1)
             $this->authorize('user.create');
 
-
         return view('Admin.User.add');
 
     }
@@ -69,9 +68,9 @@ class UserController extends Controller
             upload_file_image($user,$request->file('image'), null,null, Upload::avata);
         }
         $password = $request->password;
-        $re_password = Hash::make($request->re_password);
-        if(!Hash::check($password, $re_password))
-            return flash('Mất khẩu không khớp!', 3);
+//        $re_password = Hash::make($request->re_password);
+//        if(!Hash::check($password, $re_password))
+//            return flash('Mất khẩu không khớp!', 3);
 
         $user->password = bcrypt($password);
         $user->save();
@@ -132,11 +131,11 @@ class UserController extends Controller
                 upload_file_image($user, $request->input('image'), null,null, Upload::avata);
             }
             if($request->password){
-                $password = $request->password;
-                $re_password = Hash::make($request->re_password);
-
-                if(!Hash::check($password, $re_password))
-                    return flash('Mật khẩu không khớp', 3);
+//                $password = $request->password;
+//                $re_password = Hash::make($request->re_password);
+//
+//                if(!Hash::check($password, $re_password))
+//                    return flash('Mật khẩu không khớp', 3);
                 $user->password = bcrypt($request->password);
             }
            $user->save();

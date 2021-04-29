@@ -34,25 +34,15 @@ Cập nhật thông tin #{{$user->id}}
 
                             <div class="row mt-3">
                                 <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="account">Tài khoản <span class="required">*</span></label>
-                                        <input type="text" class="form-control" name="data[account]" id="account" value="{{old('data.account') ?? $user->account}}" required placeholder="user">
-                                    </div>
-
-                                    <div class="form-group">
+                                    <div class="">
                                         <label for="email">Tài khoản email <span class="required">*</span></label>
                                         <input type="text" class="form-control" id="email" name="data[email]"  value="{{old('data.email') ?? $user->email}}" placeholder="nguyenvan@gmail.com">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="">
                                         <label for="password">Mật khẩu </label>
                                         <input type="password" class="form-control" id="password" name="password" placeholder="******">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="re_password">Xác nhận mật khẩu </label>
-                                        <input type="password" class="form-control" id="re_password" name="re_password" placeholder="******">
                                     </div>
                                 </div>
                             </div>
@@ -60,26 +50,18 @@ Cập nhật thông tin #{{$user->id}}
                         </fieldset>
                         <fieldset title="2">
                             <legend>Thông tin cá nhân</legend>
-
                             <div class="row mt-3">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="name">Họ và tên</label>
-                                        <input type="text" class="form-control" id="name" name="data[name]" value="{{old('data.name') ?? $user->name}}" placeholder="Nguyễn Văn A">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="phone">Số điện thoại</label>
-                                        <input type="text" class="form-control" id="phone" name="data[phone]" value="{{old('data.phone') ?? $user->phone}}" placeholder="0965 688 533">
-                                    </div>
-
+                                <div class="col-md-4">
+                                    <label for="name">Họ và tên</label>
+                                    <input type="text" class="form-control" id="name" name="data[name]" value="{{old('data.name') ?? $user->name}}" placeholder="Nguyễn Văn A">
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="note">Địa chỉ</label>
-                                        <textarea name="data[address]" id="address" cols="30" rows="5" class="form-control" placeholder="Số 30, ngõ 19, Hà Đông, Hà Nội">{!! old('data.address') ?? $user->address !!}</textarea>
-                                    </div>
-
+                                <div class="col-md-4">
+                                    <label for="phone">Số điện thoại</label>
+                                    <input type="text" class="form-control" id="phone" name="data[phone]" value="{{old('data.phone') ?? $user->phone}}" placeholder="0965 688 533">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="note">Địa chỉ</label>
+                                    <input name="data[address]" id="address" class="form-control" placeholder="Số 30, ngõ 19, Hà Đông, Hà Nội" value="{!! old('data.address') ?? $user->address !!}">
                                 </div>
                             </div>
                         </fieldset>

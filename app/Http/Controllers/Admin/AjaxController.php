@@ -48,7 +48,6 @@ class AjaxController extends Controller {
         $photos = Photo::whereType($photo->type)->whereTypeId($photo->type_id)->get();
         return response()->json($photos);
     }
-
     public function uploadPhoto($id, $type){
         $files = request()->file('files');
         $count = count($files);
@@ -66,7 +65,7 @@ class AjaxController extends Controller {
             $thumb = "storage/".$path;
             $image = "storage/".$file->hashName('photo');
 
-            $photo = Photo::create([
+            Photo::create([
                 'name' => $data->name ?? $data->title,
                 'image' => $image,
                 'thumb' => $thumb,
@@ -95,7 +94,6 @@ class AjaxController extends Controller {
         $photo->update(['name' => $alt]);
         return response()->json('ok');
     }
-
     public function getAltPhoto($id){
         $photo = Photo::find($id);
         $data['image'] = asset($photo->image);
@@ -103,7 +101,6 @@ class AjaxController extends Controller {
         $data['id'] = $photo->id;
         return response()->json($data);
     }
-
     public function setPositionPhoto($json){
         $photo = json_decode($json);
         foreach ($photo as $key => $id){
@@ -147,20 +144,17 @@ class AjaxController extends Controller {
         }
         return $data;
     }
-
     public function getEditDataSort(){
         $data = $this->getSystemsModule(request()->type);
         $data->update(['sort' => request()->num,'user_edit' => Auth::id()]);
         return $data;
     }
-
     public function getEditDataStatus(){
         $data = $this->getSystemsModule(request()->type);
         $status = $data->status == 1 ? 0 : 1;
         $data->update(['status' => $status,'user_edit' => \Auth::id()]);
         return $data;
     }
-
     public function getEditDataPublic(){
         $data = $this->getSystemsModule(request()->type);
         $public = $data->public == 1 ? 0 : 1;
@@ -474,59 +468,65 @@ class AjaxController extends Controller {
             if($amount >= 0){
                 $revenue = $price * $quantity - $item->price_in *  $quantity;
             }else{
-                $revenue = $price * abs($item->amount) - $item->price_in *  abs($item->amount);
+                $revenue = $price * abs($item->amount - $item->amount_export) - $item->price_in *  abs($item->amount - $item->amount_export);
                 $revenue += $this->sumRevenueSession($item,abs($amount),$price);
             }
             return response()->json($revenue);
         }
-        return response()->json(404);
+        return response()->json(0);
     }
-
     public function sumRevenueSession($item, $quantity, $price){
         $session = $item->where('id','>',$item->id)->whereProductId($item->product_id)->whereType('import')->oldest()->first();
+
         $amount = ($session->amount - $session->amount_export) - $quantity;
         if($amount >= 0) {
             $revenue = $price * abs($quantity) - $session->price_in *  abs($quantity);
         }else{
-            $revenue = $price * abs($session->amount) - $session->price_in *  abs($session->amount);
+            $revenue = $price * abs($session->amount - $session->amount_export) - $session->price_in *  abs($session->amount - $session->amount_export);
             $revenue += $this->sumRevenueSession($session, abs($amount),$price);
         }
+
         return $revenue;
     }
 
     public function getRenvenueAfter($id, $quantity,$price){
 
         $order = ProductSession::find($id);
-        $session = ProductSession::whereProductId($order->product_id)->whereType('import')->latest()->first();
 
-        if($price == $order->price){
-            $revenue_order = $order->revenue;
-            $amount_order = $order->amount - $quantity;
-            $amount = $session->amount_export - $amount_order;
+        $session = ProductSession::whereProductId($order->product_id)->whereType('import')->whereHas('orders',function($q) use ($order){
+            $q->whereOrderId($order->order_id);
+        })->oldest()->first();
+
+        $amount_export = $order->amount - $quantity;
+
+        if($amount_export >= 0){
+            $amount = $session->amount_export - abs($quantity);
             if($amount >= 0){
-                $revenue = $revenue_order - (($amount_order * $price) - ($amount_order * $session->price_in));
+                $revenue = $price * $quantity - $session->price_in *  $quantity;
             }else{
-                $revenue_session = ($session->amount_export * $price) - ($session->amount_export * $session->price_in);
-                $revenue_session += $this->sumRevenueAfter($session, abs($amount), $price);
-                $revenue = $revenue_order - $revenue_session;
+                $revenue = $price * $session->amount_export - $session->price_in *  $session->amount_export;
+                $revenue += $this->sumRevenueAfter($session,abs($amount),$price);
             }
         }else{
-            $revenue = $this->getRevenueSession($session->id, $quantity,$price)->original;
+            $revenue = $order->revenue;
+            $revenue += $this->getRevenueSession($session->product_id,abs($amount_export),$price)->original;
         }
 
         return response()->json($revenue);
     }
-    public function sumRevenueAfter( $item,$quantity, $price)
+    public function sumRevenueAfter($item,$quantity, $price)
     {
-        $session = ProductSession::where('id','<',$item->id)->whereProductId($item->product_id)->whereType('import')->latest()->first();
-        $amount = $session->amount_export - abs($quantity);
-        if($amount >= 0) {
-            $revenue = ($quantity * $price) - ($quantity * $session->price_in);
-        }else{
-            $revenue = ($session->amount_export * $price) - ($session->amount_export * $session->price_in);
-            $revenue += $this->sumRevenueAfter($session, abs($amount), $price);
+        $session = $item->where('id','>',$item->id)->whereProductId($item->product_id)->whereType('import')->oldest()->first();
+        if($session){
+            $amount = $session->amount_export - abs($quantity);
+            if($amount >= 0) {
+                $revenue = ($quantity * $price) - ($quantity * $session->price_in);
+            }else{
+                $revenue = ($session->amount_export * $price) - ($session->amount_export * $session->price_in);
+                $revenue += $this->sumRevenueAfter($session, abs($amount), $price);
+            }
+            return  $revenue;
         }
-        return  $revenue;
     }
     //End Export
 

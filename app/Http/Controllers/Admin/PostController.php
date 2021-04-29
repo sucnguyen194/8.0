@@ -54,7 +54,9 @@ class PostController extends Controller
 
         $langs =  Lang::get();
 
-        $user = Admin::get();
+        $user = Admin::when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Post.index',compact('posts','langs','user','category'));
     }

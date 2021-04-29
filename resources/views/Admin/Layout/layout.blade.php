@@ -88,7 +88,7 @@
                     </div>
 
                     <!-- item-->
-                    <a href="{{route('admin.users.edit',Auth::id())}}" class="dropdown-item notify-item"> <i class="fe-user"></i> <span>Tài khoản</span> </a>
+                    <a href="{{route('admin.admins.edit',Auth::id())}}" class="dropdown-item notify-item"> <i class="fe-user"></i> <span>Tài khoản</span> </a>
 
                     <!-- item-->
                     <a href="{{route('admin.settings')}}" class="dropdown-item notify-item"> <i class="fe-settings"></i> <span>Settings</span> </a>
@@ -209,18 +209,22 @@
                     @endcan
 
                     @can('comment')
+                        @php
+                            $comments = \App\Models\Comment::whereStatus(0)->get();
+                        @endphp
                         <li>
                             <a href="javascript:void(0)">
                                 <i class="pe-7s-comment"></i>
                                 <span>Bình luận</span>
                                 <span class="menu-arrow"></span>
+                                <span class="badge badge-danger badge-pill">{{$comments->count()}}</span>
                             </a>
                             <ul class="nav-second-level" aria-expanded="false">
                                 <li>
-                                    <a href="{{route('admin.comments.list','posts')}}">Bài viết</a>
+                                    <a href="{{route('admin.comments.list','posts')}}">Bài viết <span class="badge badge-danger badge-pill float-right">{{$comments->where('comment_type',get_class(new \App\Models\Post()))->count()}}</span></a>
                                 </li>
                                 <li>
-                                    <a href="{{route('admin.comments.list','products')}}">Sản phẩm</a>
+                                    <a href="{{route('admin.comments.list','products')}}">Sản phẩm <span class="badge badge-danger badge-pill float-right">{{$comments->where('comment_type',get_class(new \App\Models\Product()))->count()}}</span></a>
                                 </li>
                             </ul>
                         </li>
@@ -293,20 +297,19 @@
                         </ul>
                     </li>
                     @endcan
-
+                    @can('galleries.view')
+                        <li>
+                            <a href="{{route('admin.products.galleries.index')}}">
+                                <i class="pe-7s-photo-gallery"></i>
+                                <span>Dự án</span>
+                            </a>
+                        </li>
+                    @endcan
                     @can('videos.view')
                     <li>
                         <a href="{{route('admin.products.videos.index')}}">
                             <i class="pe-7s-video"></i>
-                            <span>Videos</span>
-                        </a>
-                    </li>
-                    @endcan
-                    @can('galleries.view')
-                    <li>
-                        <a href="{{route('admin.products.galleries.index')}}">
-                            <i class="pe-7s-photo-gallery"></i>
-                            <span>Gallery</span>
+                            <span>Videos Youtube</span>
                         </a>
                     </li>
                     @endcan
@@ -491,6 +494,9 @@
         right: 0;
         bottom: 0;
     }
+    .sk-cube-grid .sk-cube {
+        background-color: #4d97c1!important;
+    }
 </style>
 
 <div class="loading">
@@ -527,12 +533,6 @@
     }
 
     initEvents();
-    // CKEDITOR.replace( 'summernote' ,{
-    //     height:150
-    // });
-    // CKEDITOR.replace( 'summerbody' ,{
-    //     height:300
-    // });
 </script>
 
 <script type="text/javascript">

@@ -41,7 +41,9 @@ class ImportController extends Controller
                 $q->whereBetween('created_at', [$range['from']->startOfDay(), $range['to']->endOfDay()]);
             })
             ->get();
-        $admins = Admin::selectRaw('id,name,email')->get();
+        $admins = Admin::selectRaw('id,name,email')->when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Import.index',compact('products','agencys','imports','admins'));
     }
@@ -140,7 +142,7 @@ class ImportController extends Controller
     {
         if(auth()->id() > 1) $this->authorize('seller.import');
 
-        $users = User::whereLever(LeverUser::ADMIN)->get();
+        $users = User::get();
         $agencys = UserAgency::status()->get();
         $import->load('sessions');
 

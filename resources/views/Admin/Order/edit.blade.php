@@ -52,7 +52,7 @@
                 </div>
                 <div class="form-group-end">
                     <button type="button" class="btn btn-default waves-effect waves-light" data-toggle="modal" data-target="#myModal"><span class="icon-button"><i class="fe-edit-2"></i></span> Sửa</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="open_bonus()"><span class="icon-button"><i class="fe-plus"></i></span> Bổ xung đơn hàng</button>
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="open_bonus()"><span class="icon-button"><i class="fe-plus"></i></span> Bổ sung đơn hàng</button>
                 </div>
             </div>
         </section>
@@ -142,7 +142,7 @@
                         </div>
                     </div>
                     <div class="" v-if="action.products.id > 0">
-                        <label>Danh sách sản phẩm (bổ xung)</label>
+                        <label>Danh sách sản phẩm (bổ sung)</label>
                         <table class="table table-bordered table-striped mb-0">
                             <thead>
                             <tr>
@@ -291,7 +291,7 @@
                 </div>
                 <div class="form-group">
                     <p>1. Thông số bên dưới bao gồm thông tin của đơn hàng và danh sách bổ sung (nếu có).</p>
-                    <p>2. Cick vào <strong>In đơn hàng</strong> hoặc <strong>In đơn bổ xung</strong> để xem thông số riêng của mỗi loại.</p>
+                    <p>2. Cick vào <strong>In đơn hàng</strong> hoặc <strong>In đơn bổ sung</strong> để xem thông số riêng của mỗi loại.</p>
                     <div class="row">
                         <div class="col-lg-6 form-group">
                             <label>Tổng tiền</label>
@@ -368,7 +368,7 @@
                 <div class="justify-content-end" style="display: -webkit-box" v-if="action.sessions.total != 0 || action.carts.revenue_update != 0">
                     <a href="#print-order" id="tooltip-hover-session" title="* Danh sách sản phẩm đã lên đơn!" v-on:click="printCart(action.sessions.customer)" class="btn btn-primary waves-effect cancel waves-light align-right mb-1 mr-2" v-if="action.sessions.total != 0" data-toggle="modal" data-target="#print-order"><span class="icon-button"><i class="pe-7s-print"></i></span> In đơn hàng</a>
 
-                    <a href="#print-cart" v-if="action.carts.revenue_update != 0"  id="tooltip-hover" title="* Danh sách sản phẩm được bổ xung (tạm tính)!"  v-on:click="printCart(action.sessions.customer)" class="btn btn-primary waves-effect cancel waves-light mb-1 tooltip-hover" data-toggle="modal" data-target="#print-cart"><span class="icon-button"><i class="pe-7s-print"></i></span> In đơn bổ xung</a>
+                    <a href="#print-cart" v-if="action.carts.revenue_update != 0"  id="tooltip-hover" title="* Danh sách sản phẩm được bổ sung (tạm tính)!"  v-on:click="printCart(action.sessions.customer)" class="btn btn-primary waves-effect cancel waves-light mb-1 tooltip-hover" data-toggle="modal" data-target="#print-cart"><span class="icon-button"><i class="pe-7s-print"></i></span> In đơn bổ sung</a>
                 </div>
 
             </div>
@@ -823,6 +823,7 @@
             products: @json($products),
             agencys: @json($agencys),
             order_id: {{$order->id}},
+            appTimeout: null,
             action: {
                 sessions:{
                     id: 0,
@@ -1016,13 +1017,16 @@
             },
             //sessions
             getRevenueSession:function(id, quantity, price){
-              if(quantity > 0 && price > 0){
-                fetch('{{route('admin.ajax.get.revenue.old',[':id',':quantity',':price'])}}'.replace(':id',id).replace(':quantity',quantity).replace(':price',price)).then(function(response){
-                    return response.json().then(function(data){
-                        app.action.sessions.revenue_item = data;
-                    })
-                })
-              }
+              clearTimeout(this.appTimeout);
+              this.appTimeout = setTimeout(function(){
+                  if(quantity > 0){
+                      fetch('{{route('admin.ajax.get.revenue.old',[':id',':quantity',':price'])}}'.replace(':id',id).replace(':quantity',quantity).replace(':price',price)).then(function(response){
+                          return response.json().then(function(data){
+                              app.action.sessions.revenue_item = data;
+                          })
+                      })
+                  }
+              }, 600)
             },
             getItemSession:function(id){
                 fetch('{{route('admin.orders.get.session',':id')}}'.replace(':id',id)).then(function(response){
@@ -1066,12 +1070,17 @@
                             if(data == 'error'){
                                 flash({'message': 'Đã có lỗi xảy ra. Vui lòng thử lại!', 'type': 'error'});
                             }else{
+                                $('#products').select2('destroy');
+                                setTimeout(function(){
+                                    $('#products').select2();
+                                },0);
                                 app.sessions = data.session;
                                 app.action.sessions.total = data.order.total;
                                 app.action.sessions.checkout = data.order.checkout;
                                 app.action.sessions.revenue = data.order.revenue;
+                                app.products = data.products;
+
                                 flash({'message': 'Xóa sản phẩm thành công!', 'type': 'success'});
-                                console.log(data);
                             }
                         })
                     })

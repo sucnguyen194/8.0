@@ -72,8 +72,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Ngày tạo</th>
-                                <th>Người tạo</th>
-                                <th>Nhà cung cấp</th>
+                                <th width="150">Người tạo</th>
+                                <th width="150">Nhà cung cấp</th>
                                 <th>Tổng tiền</th>
                                 <th>Thanh toán</th>
                                 <th>Công nợ</th>

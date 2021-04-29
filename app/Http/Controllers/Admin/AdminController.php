@@ -87,8 +87,8 @@ class AdminController extends Controller
     {
         if(auth()->id() > 1)  $this->authorize('admins.edit');
 
-        if(auth()->id() > 1)
-            return flash('Lỗi',0);
+        if($admin->id == 1 && auth()->id() > 1)
+            return flash('Lỗi',0, route('admin.admins.index'));
 
         $roles = Role::get();
 
@@ -106,8 +106,8 @@ class AdminController extends Controller
     {
         if(auth()->id() > 1)  $this->authorize('admins.edit');
 
-        if(auth()->id() > 1)
-            return flash('Lỗi',0);
+        if($admin->id == 1 && auth()->id() > 1)
+            return flash('Lỗi',0, route('admin.admins.index'));
 
         $request->validate([
             'data.name' => 'required',
@@ -144,8 +144,8 @@ class AdminController extends Controller
         if ($admin->id == auth()->id()){
             return flash('?????', 3);
         }
-        if(auth()->id() > 1)
-            return flash('Lỗi',0);
+        if($admin->id == 1 && auth()->id() > 1)
+            return flash('Lỗi',0, route('admin.admins.index'));
 
         $admin->delete();
         return flash('Xoá admin thành công');

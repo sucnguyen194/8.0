@@ -42,7 +42,9 @@ class CustomerController extends Controller
 
         $langs =  Lang::get();
 
-        $users = Admin::get();
+        $users = Admin::when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Support.Customer.index',compact('supports','langs','users'));
     }

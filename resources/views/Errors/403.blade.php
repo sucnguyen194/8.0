@@ -1,1 +1,1 @@
-@include('Admin.Login.login')
+@include('Admin.Auth.login')

@@ -75,10 +75,10 @@
                         <p class="font-13">Thiết lập các thẻ mô tả giúp khách hàng dễ dàng tìm thấy trang trên công cụ tìm kiếm như Google.</p>
 
                         <div class="test-seo">
-                            <div>
+                            <div class="mb-1">
                                 <a href="javascript:void(0)" class="title-seo"></a>
                             </div>
-                            <div class="url-seo font-weight-bold mb-1">
+                            <div class="url-seo">
                                 <span class="alias-seo" id="alias_seo">{{route('home')}}</span>
                             </div>
                             <div class="description-seo"></div>

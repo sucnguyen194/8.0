@@ -30,54 +30,35 @@ Thêm mới
                     <div class="card-box" id="wizard-clickable" >
                         <fieldset title="1">
                             <legend>Thông tin đăng nhập</legend>
-
                             <div class="row mt-3">
                                 <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="account">Tài khoản <span class="required">*</span></label>
-                                        <input type="text" class="form-control" name="data[account]" id="account" value="{{old('data.account')}}" required placeholder="user">
-                                    </div>
-
-                                    <div class="form-group">
+                                    <div class="">
                                         <label for="email">Tài khoản email <span class="required">*</span></label>
                                         <input type="text" class="form-control" id="email" name="data[email]"  value="{{old('data.email') ?? \Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(7))}}@gmail.com" placeholder="nguyenvan@gmail.com">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="">
                                         <label for="password">Mật khẩu <span class="required">*</span></label>
                                         <input type="text" class="form-control" id="password" name="password" value="QAZ123" required placeholder="******">
                                     </div>
-
-                                    <div class="form-group">
-                                        <label for="re_password">Xác nhận mật khẩu <span class="required">*</span></label>
-                                        <input type="text" class="form-control" id="re_password" name="re_password" value="QAZ123" required placeholder="******">
-                                    </div>
                                 </div>
                             </div>
-
                         </fieldset>
                         <fieldset title="2">
                             <legend>Thông tin cá nhân</legend>
                             <div class="row mt-3">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="name">Họ và tên</label>
-                                        <input type="text" class="form-control" id="name" name="data[name]" value="{{old('data.name')}}" placeholder="Nguyễn Văn A">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="phone">Số điện thoại</label>
-                                        <input type="text" class="form-control" id="phone" name="data[phone]" value="{{old('data.phone')}}" placeholder="0965 688 533">
-                                    </div>
-
+                                <div class="col-md-4">
+                                    <label for="name">Họ và tên</label>
+                                    <input type="text" class="form-control" id="name" name="data[name]" value="{{old('data.name')}}" placeholder="Nguyễn Văn A">
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="address">Địa chỉ</label>
-                                        <textarea name="data[address]" id="address" cols="30" rows="5" class="form-control" placeholder="Số 30, ngõ 19, Hà Đông, Hà Nội">{!! old('data.address') !!}</textarea>
-                                    </div>
-
+                                <div class="col-md-4">
+                                    <label for="phone">Số điện thoại</label>
+                                    <input type="text" class="form-control" id="phone" name="data[phone]" value="{{old('data.phone')}}" placeholder="0965 688 533">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="address">Địa chỉ</label>
+                                    <input name="data[address]" id="address" class="form-control" value="{!! old('data.address') !!}" placeholder="Số 30, ngõ 19, Hà Đông, Hà Nội">
                                 </div>
                             </div>
                         </fieldset>

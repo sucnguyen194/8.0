@@ -126,8 +126,8 @@
 
                                 <th>ID</th>
                                 <th>Ngày tạo</th>
-                                <th style="width: 30%">Người tạo</th>
-                                <th style="width: 30%">Khách hàng</th>
+                                <th width="150">Người tạo</th>
+                                <th width="150">Khách hàng</th>
                                 <th>Tổng tiền</th>
                                 <th>Thanh toán</th>
                                 <th>Công nợ</th>

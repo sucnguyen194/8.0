@@ -9,19 +9,19 @@ class ProductSession extends Model
     protected $guarded = ['id'];
 
     public function product(){
-        return $this->belongsTo(Product::class,'product_id');
+        return $this->belongsTo(Product::class);
     }
 
     public function import(){
-        return $this->belongsTo(Import::class,'import_id');
+        return $this->belongsTo(Import::class);
     }
 
     public function export(){
-        return $this->belongsTo(Order::class,'order_id');
+        return $this->belongsTo(Order::class);
     }
 
     public function agency(){
-        return $this->belongsTo(UserAgency::class,'agency_id');
+        return $this->belongsTo(UserAgency::class);
     }
 
     public function user(){
@@ -32,70 +32,33 @@ class ProductSession extends Model
         return $this->belongsTo(Admin::class,'user_create');
     }
 
-    public function updateAmountSessionAfter($id, $quantity){
-        $session = new ProductSession();
-        if($quantity > 0){
-            $sessions = $session->whereType('import')->whereColumn('amount_export','<','amount')->whereProductId($id)->oldest()->first();
-            if(!$sessions){
-                $sessions = $session->whereType('import')->whereProductId($id)->latest()->first();
-            }
-            $amount = $sessions->amount_export - abs($quantity);
-            if($amount >= 0){
-                $sessions->update([
-                    'amount_export' => $amount,
-                ]);
-            }else{
-                $sessions->update([
-                    'amount_export' => 0
-                ]);
-                $this->subUpdateAmountSessionAfter($sessions,abs($amount));
-            }
-        }else{
-            $this->updateAmountSession($id, $quantity);
-        }
-
-        return $this;
+    public function orders(){
+        return $this->belongsToMany(Order::class);
     }
-    public function subUpdateAmountSessionAfter($item, $quantity){
 
-        $session = $item->where('id','<',$item->id)->whereType('import')->whereProductId($item->product_id)->latest()->first();
-        $amount = $session->amount_export - $quantity;
-        if($amount >= 0) {
+    //UPDATE AMOUNT CREATE ORDER (ok)
+    public function updateAmountSession($id,$quantity, $order){
+
+        $session = new ProductSession();
+        $session = $session->whereType('import')->whereColumn('amount_export','<','amount')->whereProductId($id)->oldest()->first();
+
+        $amount = $session->amount - $session->amount_export - abs($quantity);
+        if($amount >= 0 ){
             $session->update([
-                'amount_export' => $amount,
+                'amount_export' => $session->amount_export + abs($quantity)
             ]);
         }else{
             $session->update([
-                'amount_export' => 0
+                'amount_export' => $session->amount
             ]);
-            return $this->subUpdateAmountSessionAfter($session,abs($amount));
+            $this->subUpdateAmountSession($session,abs($amount),$order);
         }
+        $order->imports()->attach($session->id);
     }
-    public function updateAmountSession($id,$quantity){
-
-        $session = new ProductSession();
-        $session = $session->whereType('import')->whereProductId($id)->oldest()->get();
-
-        $session->each(function($item,$key) use ($quantity){
-            if($item->amount >  $item->amount_export){
-                $amount = $item->amount - $item->amount_export - abs($quantity);
-                if($amount >= 0){
-                    $item->update([
-                        'amount_export' => $item->amount_export + abs($quantity)
-                    ]);
-                }else{
-                    $item->update([
-                        'amount_export' => $item->amount
-                    ]);
-                    $this->subUpdateAmountSession($item,abs($amount));
-                }
-                return false;
-            }
-        });
-    }
-    public function subUpdateAmountSession($item, $quantity){
+    public function subUpdateAmountSession($item, $quantity , $order){
 
         $session = $item->where('id','>',$item->id)->whereType('import')->whereProductId($item->product_id)->oldest()->first();
+        if($order && $session) $order->imports()->attach($session->id);
 
         $amount = $session->amount - $quantity;
         if($amount >= 0) {
@@ -106,8 +69,66 @@ class ProductSession extends Model
             $session->update([
                 'amount_export' => $session->amount
             ]);
-            return $this->subUpdateAmountSession($session,abs($amount));
+            return $this->subUpdateAmountSession($session,abs($amount), $order);
         }
     }
 
+    //UPDATE AMOUNT EDIT ORDER  (ok)
+    public function updateAmountSessionEdit($product_id, $quantity, $order){
+        $session = new ProductSession();
+        if($order){
+
+            $sum_export =  $order->sessions()->whereProductId($product_id)->sum('amount');
+            $session = $session->whereProductId($product_id)->whereHas('orders',function($q) use ($order){
+                $q->whereOrderId($order->id);
+            })->oldest()->first();
+
+            if($session){
+                $this->updateAmountSessionDelete($product_id,$sum_export, $order);
+                $this->updateAmountSession($session->product_id,abs($quantity),$order);
+            }
+
+        }
+    }
+
+    //UPDATE AMOUNT AFTER DELETE (ok)
+    public function updateAmountSessionDelete($id, $quantity,$order){
+        $session = new ProductSession();
+
+        $session = $session->whereProductId($id)->whereType('import')->whereHas('orders',function($q) use ($order){
+            $q->whereOrderId($order->id);
+        })->oldest()->first();
+
+        if(!$session)
+            $session = $session->whereProductId($id)->whereType('import')->oldest()->first();
+
+        $order->imports()->detach();
+
+        $amount =  $session->amount_export - abs($quantity);
+        if($amount >= 0){
+            $session->update([
+                'amount_export' => $amount,
+            ]);
+        }else{
+            $session->update([
+                'amount_export' => 0
+            ]);
+            $this->subUpdateAmountSessionDelete($session,abs($amount));
+        }
+    }
+    public function subUpdateAmountSessionDelete($item, $quantity){
+
+        $session = $item->where('id','>',$item->id)->whereType('import')->whereProductId($item->product_id)->oldest()->first();
+        $amount = $session->amount_export - $quantity;
+        if($amount >= 0) {
+            $session->update([
+                'amount_export' => $amount,
+            ]);
+        }else{
+            $session->update([
+                'amount_export' => 0
+            ]);
+            $this->subUpdateAmountSessionDelete($session,abs($amount));
+        }
+    }
 }

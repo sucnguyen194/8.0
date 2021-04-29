@@ -54,7 +54,9 @@ class ProductController extends Controller
             ->orderByDesc('created_at')->get();
         $categories = Category::whereLang($lang)->whereType(CategoryType::PRODUCT_CATEGORY)->public()->get();
         $langs =  Lang::get();
-        $users = Admin::get();
+        $users = Admin::when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Product.list',compact('products','categories','langs','users'));
     }

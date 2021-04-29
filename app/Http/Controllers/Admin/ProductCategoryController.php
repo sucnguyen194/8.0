@@ -39,7 +39,9 @@ class ProductCategoryController extends Controller
             ->orderByDesc('id')->get();
 
         $langs =  Lang::all();
-        $users = Admin::get();
+        $users = Admin::when(auth()->id() > 1, function ($q){
+            $q->where('id','>', 1);
+        })->get();
 
         return view('Admin.Product.category.index',compact('categories','langs','users'));
     }
