@@ -49,8 +49,10 @@
                                 <td>@{{number_format(user.debt)}}</td>
                                 <td>@{{user.phone}}</td>
                                 <td>
+                                    @can('debts.borrow.pay')
                                     <button class="btn btn-purple waves-effect waves-light" data-toggle="modal" data-target="#updatedebt" v-on:click="choiseType(user.id, borrow, user.name, user.debt)">Vay</button>
                                     <button class="btn btn-success waves-effect waves-light" data-toggle="modal" data-target="#updatedebt" v-on:click="choiseType(user.id, pay ,user.name , user.debt)">Trả</button>
+                                    @endcan
                                     <a v-bind:href="'{{route('admin.debts.edit',':id')}}'.replace(':id', user.id)" class="btn btn-primary waves-effect waves-light">
                                         <span class="icon-button"><i class="fe-edit-2"></i></span></a>
                                     <form method="post" v-bind:action="'{{route('admin.debts.destroy',':id')}}'.replace(':id',user.id)" class="d-inline-block">

@@ -26,7 +26,7 @@ class UserController extends Controller
     public function index()
     {
         if(auth()->id() > 1)
-        $this->authorize('user.view');
+        $this->authorize('users.view');
 
         $user = User::when(request()->id,function ($q,$id){
             $q->where('id',$id);
@@ -44,7 +44,7 @@ class UserController extends Controller
     public function create()
     {
         if(auth()->id() > 1)
-            $this->authorize('user.create');
+            $this->authorize('users.create');
 
         return view('Admin.User.add');
 
@@ -59,7 +59,7 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         if(auth()->id() > 1)
-            $this->authorize('user.create');
+            $this->authorize('users.create');
 
         $user = new User();
         $user->forceFill($request->data);
@@ -87,7 +87,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         if(auth()->id() > 1)
-            $this->authorize('user.view');
+            $this->authorize('users.view');
 
         $transaction = Transaction::whereUserId($user->id)
             ->when(date_range(),function ($q, $date){
@@ -108,7 +108,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         if(auth()->id() > 1)
-            $this->authorize('user.edit');
+            $this->authorize('users.edit');
 
             return view('Admin.User.edit',compact('user'));
     }
@@ -123,7 +123,7 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         if(auth()->id() > 1)
-            $this->authorize('user.edit');
+            $this->authorize('users.edit');
 
             $user->forceFill($request->data);
             if($request->hasFile('image')){
@@ -152,7 +152,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if(auth()->id() > 1)
-            $this->authorize('user.destroy');
+            $this->authorize('users.destroy');
 
         $user->delete();
         return flash('Xóa thành công', 1);

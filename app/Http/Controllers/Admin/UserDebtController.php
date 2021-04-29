@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class UserDebtController extends Controller
 {
-    public $type = SystemsModuleType::DEBT;
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +15,7 @@ class UserDebtController extends Controller
      */
     public function index()
     {
-        authorize($this->type);
+        if(auth()->id() > 1) $this->authorize('debts.view');
 
         $users = UserDebt::when(\request()->id,function ($q, $id){
             $q->whereId($id);
@@ -32,7 +31,7 @@ class UserDebtController extends Controller
      */
     public function create()
     {
-        authorize($this->type);
+        if(auth()->id() > 1) $this->authorize('debts.create');
 
         return view('Admin.Debt.create');
     }
@@ -45,7 +44,8 @@ class UserDebtController extends Controller
      */
     public function store(Request $request)
     {
-        authorize($this->type);
+        if(auth()->id() > 1) $this->authorize('debts.create');
+
         $user = new UserDebt();
         $user->forceFill($request->data);
         $user->save();
@@ -61,7 +61,8 @@ class UserDebtController extends Controller
      */
     public function show(UserDebt $debt)
     {
-        authorize($this->type);
+        if(auth()->id() > 1) $this->authorize('debts.view');
+
         $transactions = $debt->transactions()->when(date_range(),function ($q, $date){
             $q->whereBetween('created_at', [$date['from']->startOfDay(), $date['to']->endOfDay()]);
         })
@@ -76,9 +77,10 @@ class UserDebtController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, UserDebt $debt)
+    public function edit(UserDebt $debt)
     {
-        authorize($this->type);
+        if(auth()->id() > 1) $this->authorize('debts.edit');
+
         $debt->load('transactions');
         return view('Admin.Debt.edit',compact('debt'));
     }
@@ -92,7 +94,8 @@ class UserDebtController extends Controller
      */
     public function update(Request $request, UserDebt $debt)
     {
-        authorize($this->type);
+        if(auth()->id() > 1) $this->authorize('debts.edit');
+
         $debt->forceFill($request->data);
         $debt->status = $request->has('stauts') ? 1 : 0;
         $debt->save();
@@ -100,7 +103,8 @@ class UserDebtController extends Controller
     }
 
     public function debts($id,$type, $current){
-        authorize($this->type);
+        if(auth()->id() > 1) $this->authorize('debts.borrow.pay');
+
         $user = UserDebt::findOrFail($id);
         switch ($type){
             case 'borrow':
@@ -130,7 +134,8 @@ class UserDebtController extends Controller
      */
     public function destroy(UserDebt $debt)
     {
-        authorize($this->type);
+        if(auth()->id() > 1) $this->authorize('debts.destroy');
+
         $debt->transactions()->delete();
         $debt->delete();
         return flash('Xóa thành công!', 1);

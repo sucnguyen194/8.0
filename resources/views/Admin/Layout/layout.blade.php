@@ -371,6 +371,15 @@
                     </li>
                     @endcan
 
+                    @can('debts.view')
+                        <li>
+                            <a href="{{route('admin.debts.index')}}">
+                                <i class="pe-7s-diamond"></i>
+                                <span>Vay vốn</span>
+                            </a>
+                        </li>
+                    @endcan
+
                     @can('setting.edit')
                     <li class="menu-title">Cấu hình</li>
                     <li>
@@ -388,7 +397,7 @@
                                 <a href="{{route('admin.alias.index')}}">Đường dẫn</a>
                             </li>
                             @endcan
-                            @can('setting.edit')
+                            @can('setting.source')
                             <li>
                                 <a href="{{route('admin.source.index')}}">Sửa website</a>
                             </li>
