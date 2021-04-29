@@ -13,7 +13,7 @@ class LangSeeder extends Seeder
     {
         \App\Models\Lang::create([
             'name' => 'Vietnamese',
-            'value' => 'vn',
+            'value' => 'vi',
             'status' => 1,
             'sort' => 1
         ]);

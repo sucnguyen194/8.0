@@ -22,7 +22,7 @@ class PhotoController extends Controller
 
         $photos = Photo::whereType(MediaType::PHOTO)->when(\request()->position, function($q, $position){
             $q->wherePosition($position);
-        })->public()->get();
+        })->public()->latest()->get();
 
         $positions = [];
         if(Schema::hasTable('position_image'))

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8" />
     <title>@yield('title') - {{setting()->name}}</title>
@@ -301,7 +301,7 @@
                         <li>
                             <a href="{{route('admin.products.galleries.index')}}">
                                 <i class="pe-7s-photo-gallery"></i>
-                                <span>Dự án</span>
+                                <span>Album ảnh</span>
                             </a>
                         </li>
                     @endcan

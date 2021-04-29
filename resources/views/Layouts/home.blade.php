@@ -6,6 +6,7 @@
 <!-----------SOURCSE----------->
 <!-------------------------->
 {{auth()->guard('admin')->check()}}
+{{app()->getLocale()}}
 <div class="backtop" BACKTOP style="width: 50px; height: 50px; background: red; position: fixed; bottom: 30px; right: 30px; display: none">Top</div>
 
 <script>

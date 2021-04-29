@@ -35,7 +35,6 @@ class HomeController extends Controller
         $sessions = new ProductSession();
         $order = ProductSession::find(32);
 
-        dd($order);
 
         return view('Layouts.home');
     }
