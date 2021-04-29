@@ -1,11 +1,11 @@
 <?php namespace App\Http\Controllers;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Models\BaseModel;
 use App\Models\MailModel;
-use DB,Session,Cart,Whois,Mail,Socialite,Image,Helper;
+use DB,Session,Cart,Mail,Socialite,Image,Helper;
 use Illuminate\Http\Request;
-class ShoppingCartController extends Controller {
+
+class OrderController extends Controller {
 	public function index(){
 		$data['cart'] = Cart::content();
 		return view('frontend.shoppingcart.shoppingcart',$data);

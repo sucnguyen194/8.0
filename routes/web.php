@@ -132,7 +132,6 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.', 'prefix' => 'admin'],fun
         Route::post('modules/action/{table}/{id}/edit', 'ModulesController@updateAction');
         Route::get('modules/action/{table}/{id}/del', 'ModulesController@detroyAction')->name('action.module.destroy');
         Route::resource('modules','ModulesController');
-        Route::resource('systems','SystemsController');
 
         Route::get('comments/{type}','CommentController@list')->name('comments.list');
         Route::get('comments/{type}/{id}','CommentController@detail')->name('comments.detail');
@@ -206,12 +205,12 @@ Route::group(['namespace' => 'User'], function(){
     });
 });
 
-Route::group(['as' => 'cart.'], function () {
-    Route::get('shopping/cart', 'ShoppingCartController@index');
-    Route::get('checkout', 'ShoppingCartController@checkout');
-    Route::post('checkout', 'ShoppingCartController@payment');
-    Route::get('cart/destroy', 'ShoppingCartController@destroy');
-    Route::get('cart/remove/{rowid}', 'ShoppingCartController@remove');
+Route::group(['as' => 'orders.'], function () {
+    Route::get('shopping/cart', 'OrderController@index');
+    Route::get('checkout', 'OrderController@checkout');
+    Route::post('checkout', 'OrderController@payment');
+    Route::get('cart/destroy', 'OrderController@destroy');
+    Route::get('cart/remove/{rowid}', 'OrderController@remove');
 });
 Route::group(['prefix' => 'ajax','as' => 'ajax.'], function () {
     Route::get('add/cart/{id}', 'AjaxController@addShoppingCart');
