@@ -55,7 +55,7 @@ class VideoController extends Controller {
 
 	public function edit(Product $video){
         if(auth()->id() > 1) $this->authorize('videos.edit');
-        if($video->postLangsBefore){
+        if($video->postLangsBefore->count()){
             $id = array_unique($video->postLangsBefore->pluck('post_id')->toArray());
             $posts = Product::whereIn('id',$id)->get()->load('language');
             $langs = Lang::whereNotIn('value',$posts->pluck('lang'))->where('value','<>',$video->lang)->get();

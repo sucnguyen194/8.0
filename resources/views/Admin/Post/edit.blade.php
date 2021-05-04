@@ -166,7 +166,7 @@
                             <a href="{{route('admin.posts.lang',[$lang->value,$post->id])}}" class="btn btn-primary waves-effect width-md waves-light mb-1"><span class="icon-button"><i class="fe-plus"></i> {{$lang->name}}</a>
                         @endforeach
 
-                        @if($post->postLangsBefore)
+                        @if($post->postLangsBefore->count())
                             @foreach($posts as $item)
                                 <a href="{{route('admin.posts.edit',$item->id)}}" class="btn btn-purple waves-effect waves-light mb-1"><span class="icon-button"><i class="fe-edit-2" aria-hidden="true"></i></span> {{$item->language->name }} #{{$item->id}}</a>
                             @endforeach

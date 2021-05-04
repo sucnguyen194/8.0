@@ -155,7 +155,7 @@
                             <a href="{{route('admin.products.galleries.lang',[$lang->value,$gallery->id])}}" class="btn btn-primary waves-effect width-md waves-light mb-1"><span class="icon-button"><i class="fe-plus"></i> {{$lang->name}}</a>
                         @endforeach
 
-                        @if($gallery->postLangsBefore)
+                        @if($gallery->postLangsBefore->count())
                             @foreach($posts as $item)
                                 <a href="{{route('admin.products.galleries.edit',$item->id)}}" class="btn btn-purple waves-effect waves-light mb-1"><span class="icon-button"><i class="fe-edit-2" aria-hidden="true"></i></span> {{$item->language->name}} #{{$item->id}}</a>
                             @endforeach

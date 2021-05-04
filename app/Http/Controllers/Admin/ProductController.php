@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\CategoryType;
 use App\Enums\SystemsModuleType;
 use App\Http\Controllers\Controller;
+use App\Jobs\CreateTags;
 use App\Models\Admin;
 use App\Models\Alias;
 use App\Models\AttributeCategory;
@@ -160,8 +161,8 @@ class ProductController extends Controller
             upload_multiple_image($product,$checkFile, $request->file('photo'), 375, 375);
         }
 
-        if($request->input('data.tags')){
-            create_tags($product);
+        if($product->tags){
+            CreateTags::dispatch($product)->onQueue('default');
         }
         $product->categories()->attach($request->category_id);
         $product->attributes()->attach($request->attribute);
@@ -194,7 +195,7 @@ class ProductController extends Controller
         $photo = $product->photos()->orderby('sort','asc')->get();
         $attributes = AttributeCategory::with('attributes')->public()->oldest('sort')->get();
 
-        if($product->postLangsBefore){
+        if($product->postLangsBefore->count()){
             $id = array_unique($product->postLangsBefore->pluck('post_id')->toArray());
             $posts = Product::whereIn('id',$id)->get()->load('language');
             $langs = Lang::whereNotIn('value',$posts->pluck('lang'))->where('value','<>',$product->lang)->get();
@@ -254,8 +255,8 @@ class ProductController extends Controller
         $product->save();
 
         $product->tags()->delete();
-        if($request->input('data.tags')){
-            create_tags($product);
+        if($product->tags){
+            CreateTags::dispatch($product)->onQueue('default');
         }
         $product->categories()->sync($request->category_id);
         $product->attributes()->sync($request->attribute);
@@ -353,8 +354,8 @@ class ProductController extends Controller
             upload_multiple_image($product, $checkFile, $request->file('photo'), 375, 375);
         }
 
-        if($request->input('data.tags')){
-            create_tags($product);
+        if($product->tags){
+            CreateTags::dispatch($product)->onQueue('default');
         }
 
         $old = Product::findOrFail($id);

@@ -51,7 +51,7 @@ class PageController extends Controller
 
         if(auth()->id() > 1) $this->authorize('blog.edit');
 
-        if($page->postLangsBefore){
+        if($page->postLangsBefore->count()){
             $id = array_unique($page->postLangsBefore->pluck('post_id')->toArray());
             $pages = Post::whereIn('id',$id)->get()->load('language');
             $langs = Lang::whereNotIn('value',$pages->pluck('lang'))->where('value','<>',$page->lang)->get();

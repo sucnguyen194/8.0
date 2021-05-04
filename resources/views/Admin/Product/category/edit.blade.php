@@ -198,7 +198,7 @@
                             <a href="{{route('admin.products.categories.lang',[$lang->value,$category->id])}}" class="btn btn-primary waves-effect width-md waves-light mb-1"><span class="icon-button"><i class="fe-plus"></i> {{$lang->name}}</a>
                         @endforeach
 
-                        @if($category->postLangsBefore)
+                        @if($category->postLangsBefore->count())
                             @foreach($lists as $item)
                                 <a href="{{route('admin.products.categories.edit',$item->id)}}" class="btn btn-purple waves-effect waves-light mb-1"><span class="icon-button"><i class="fe-edit-2" aria-hidden="true"></i></span> {{$item->language->name}} #{{$item->id}}</a>
                             @endforeach

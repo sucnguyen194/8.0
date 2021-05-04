@@ -93,7 +93,7 @@ class GalleryController extends Controller
 
         $type = SystemsModuleType::GALLERY;
         $photos = $gallery->photos()->orderby('sort','asc')->get();
-        if($gallery->postLangsBefore){
+        if($gallery->postLangsBefore->count()){
             $id = array_unique($gallery->postLangsBefore->pluck('post_id')->toArray());
             $posts = Product::whereIn('id',$id)->get()->load('language');
             $langs = Lang::whereNotIn('value',$posts->pluck('lang'))->where('value','<>',$gallery->lang)->get();

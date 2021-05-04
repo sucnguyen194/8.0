@@ -5,6 +5,7 @@ use App\Enums\ActiveDisable;
 use App\Enums\CategoryType;
 use App\Enums\SystemsModuleType;
 use App\Http\Controllers\Controller;
+use App\Jobs\CreateTags;
 use App\Models\Admin;
 use App\Models\Alias;
 use App\Models\Category;
@@ -97,12 +98,11 @@ class PostController extends Controller
 
         if(!$request->has('unlink') && $request->hasFile('image')){
            upload_file_image($post, $request->file('image'), 375, 375);
-
         }
         $post->save();
 
         if($request->input('data.tags')){
-            create_tags($post);
+            CreateTags::dispatch($post)->onQueue('default');
         }
         $post->categories()->attach($request->category_id);
 
@@ -131,7 +131,7 @@ class PostController extends Controller
 
         $categories = Category::whereType(CategoryType::POST_CATEGORY)->public()->langs()->get();
 
-        if($post->postLangsBefore){
+        if($post->postLangsBefore->count()){
             $id = array_unique($post->postLangsBefore->pluck('post_id')->toArray());
             $posts = Post::whereIn('id',$id)->with('language')->get();
             $langs = Lang::whereNotIn('value',$posts->pluck('lang'))->where('value','<>',$post->lang)->get();
@@ -178,9 +178,8 @@ class PostController extends Controller
         $post->save();
         $post->categories()->sync($request->category_id);
 
-        $post->tags()->delete();
-        if($request->input('data.tags')){
-            create_tags($post);
+        if($post->tags){
+            CreateTags::dispatch($post)->onQueue('default');
         }
 
         return flash('Cập nhật thành công!',1);
@@ -215,10 +214,11 @@ class PostController extends Controller
         $post->save();
 
         $post->categories()->attach($request->category_id);
-        if($request->input('data.tags')){
-            create_tags($post);
+        if($post->tags){
+            CreateTags::dispatch($post)->onQueue('default');
         }
         $old = Post::findOrFail($id);
+
         if($old) {
             add_post_lang($id,$post,$old,$old->type,$lang);
         }

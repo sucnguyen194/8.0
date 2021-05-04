@@ -1,48 +1,15 @@
 <?php
 
 use App\Models\Photo;
-use App\Models\Tags;
-use Illuminate\Support\Facades\Auth;
 use App\Models\PostLang;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
-
-if(!function_exists('send_mail')){
-    function send_email($template, $data, $email = null){
-        $setting = setting();
-        $emails = $email ? $email : $setting->email;
-       return Mail::send('Emails.'.$template,$data,function($msg) use ($setting, $emails){
-            $msg->from(env('MAIL_USERNAME'),'Thông báo');
-            $msg->to($emails)->subject($setting->name);
-        });
-    }
-}
 if (!function_exists('setting')){
     function setting(){
         return  session()->get('setting');
     }
 }
 
-if(!function_exists('create_tags')){
-    function create_tags($data, $type = null){
-        $type = $data->type ?? $type;
-        $tag = null;
-        foreach(explode(',', $data->tags) as $items){
-            $alias = Str::slug($items);
-            if(!Tags::whereAlias($alias)->whereType($type)->whereTypeId($data->id)->count()){
-                $tag = new Tags();
-                $tag->name = $items;
-                $tag->alias = $alias;
-                $tag->type = $type;
-                $tag->type_id = $data->id;
-                $tag->lang = $data->lang;
-                $tag->save();
-            }
-        }
-        return $tag;
-    }
-}
 if (!function_exists('upload_multiple_image')){
     function upload_multiple_image($data, $check, $files , $width = null , $height = null){
         $sort = 0;
@@ -94,9 +61,9 @@ if (!function_exists('upload_multiple_image')){
 }
 
 if(!function_exists('upload_file_image')){
-    function upload_file_image($data,$file, $width = null , $height = null, $colum = null){
+    function upload_file_image($data,$file, $width = null , $height = null, $column = null){
         $file->store('photo');
-        $colum = is_null($colum) ? \App\Enums\Upload::image : $colum;
+        $colum = is_null($column) ? \App\Enums\Upload::image : $column;
         $data->$colum = "storage/".$file->hashName('photo');
         if($width && $height){
             $path = $file->hashName('photo/thumb');
@@ -136,20 +103,6 @@ if (! function_exists('date_range')) {
         $range['from'] = \Carbon\Carbon::createFromFormat($format_in, $parts[0]);
         $range['to'] = \Carbon\Carbon::createFromFormat($format_in, $parts[1]);
         return $range;
-    }
-}
-
-if(!function_exists('authorize')){
-    function authorize($type){
-
-        if(!auth()->check())
-            return abort(403);
-
-        $id = \App\Models\System::whereType($type)->firstOrFail()->id;
-        if(\auth()->user()->systems()->whereId($id)->exists() || Auth::user()->lever == \App\Enums\LeverUser::SUPPERADMIN)
-            return true;
-
-        return abort(404);
     }
 }
 

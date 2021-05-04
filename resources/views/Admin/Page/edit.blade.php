@@ -143,7 +143,7 @@
                             <a href="{{route('admin.posts.pages.lang',[$lang->value,$page->id])}}" class="btn btn-primary waves-effect width-md waves-light mb-1"><span class="icon-button"><i class="fe-plus"></i> {{$lang->name}}</a>
                         @endforeach
 
-                        @if($page->postLangsBefore)
+                        @if($page->postLangsBefore->count())
                             @foreach($pages as $item)
                                 <a href="{{route('admin.posts.pages.edit',$item->id)}}" class="btn btn-purple waves-effect waves-light mb-1"><span class="icon-button"><i class="fe-edit-2" aria-hidden="true"></i></span> {{$item->language->name}} #{{$item->id}}</a>
                             @endforeach

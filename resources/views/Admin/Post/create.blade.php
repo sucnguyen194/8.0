@@ -158,7 +158,7 @@
                     <div class="card-box tags">
                         <label>Tags</label>
                         <p>* Ghi chú: Từ khóa được phân chia sau dấu phẩy <strong>","</strong></p>
-                        <input class="form-control" name="tags" data-role="tagsinput" placeholder="add tags">
+                        <input class="form-control" name="data[tags]" data-role="tagsinput" placeholder="add tags">
                     </div>
                 </div>
 

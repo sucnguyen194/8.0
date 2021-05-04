@@ -56,7 +56,7 @@ class PostCategoryController extends Controller
         $categories = Category::whereLang($lang)->whereType($type)->whereNotIn('id',[$category->id])->orderByDesc('id')->get();
 
         //lang
-        if($category->postLangsBefore){
+        if($category->postLangsBefore->count()){
             $id = array_unique($category->postLangsBefore->pluck('post_id')->toArray());
             $lists = Category::whereIn('id',$id)->get()->load('language');
             $langs = Lang::whereNotIn('value',$lists->pluck('lang'))->whereNotIn('value',[$category->lang])->get();
