@@ -13,19 +13,19 @@ class ProductSession extends Model
     }
 
     public function import(){
-        return $this->belongsTo(Import::class);
+        return $this->belongsTo(Import::class,'import_id');
     }
 
     public function export(){
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class,'order_id');
     }
 
     public function agency(){
-        return $this->belongsTo(UserAgency::class);
+        return $this->belongsTo(UserAgency::class,'agency_id');
     }
 
     public function user(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'user_id');
     }
 
     public function admin(){
@@ -93,14 +93,14 @@ class ProductSession extends Model
 
     //UPDATE AMOUNT AFTER DELETE (ok)
     public function updateAmountSessionDelete($id, $quantity,$order){
-        $session = new ProductSession();
+        $sessions = new ProductSession();
 
-        $session = $session->whereProductId($id)->whereType('import')->whereHas('orders',function($q) use ($order){
+        $session = $sessions->whereProductId($id)->whereType('import')->whereHas('orders',function($q) use ($order){
             $q->whereOrderId($order->id);
         })->oldest()->first();
 
         if(!$session)
-            $session = $session->whereProductId($id)->whereType('import')->oldest()->first();
+            $session = $sessions->whereProductId($id)->whereType('import')->oldest()->first();
 
         $order->imports()->detach();
 

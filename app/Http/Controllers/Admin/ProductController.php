@@ -33,6 +33,7 @@ class ProductController extends Controller
 
         $type = SystemsModuleType::PRODUCT;
         $lang = isset(request()->lang) ? request()->lang : Session::get('lang');
+
         $products = Product::with('category')->whereType($type)->where('lang',$lang)
             ->when(request()->user,function($q, $user){
                 $q->where('user_id',$user);
@@ -200,6 +201,7 @@ class ProductController extends Controller
             $posts = Product::whereIn('id',$id)->get()->load('language');
             $langs = Lang::whereNotIn('value',$posts->pluck('lang'))->where('value','<>',$product->lang)->get();
         }else{
+            $posts = null;
             $langs = Lang::where('value','<>',$product->lang)->get();
         }
 

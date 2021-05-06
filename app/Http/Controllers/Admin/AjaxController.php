@@ -497,6 +497,9 @@ class AjaxController extends Controller {
             $q->whereOrderId($order->order_id);
         })->oldest()->first();
 
+        if(!$session)
+            $session = ProductSession::whereProductId($order->product_id)->whereType('import')->whereColumn('amount_export','<','amount')->oldest()->first();
+
         $amount_export = $order->amount - $quantity;
 
         if($amount_export >= 0){
@@ -509,7 +512,7 @@ class AjaxController extends Controller {
             }
         }else{
             $revenue = $order->revenue;
-            $revenue += $this->getRevenueSession($session->product_id,abs($amount_export),$price)->original;
+            $revenue += $this->getRevenueSession($order->product_id,abs($amount_export),$price)->original;
         }
 
         return response()->json($revenue);

@@ -61,7 +61,7 @@ class OrderController extends Controller
         if(auth()->id() > 1) $this->authorize('seller.export');
 
         $products = Product::selectRaw('id, name, amount')->public()->orderby('name', 'asc')->get();
-        $users = User::selectRaw('id,name,account,phone')->orderByDesc('id')->get();
+        $users = User::selectRaw('id,name,phone')->orderByDesc('id')->get();
         $agencys = UserAgency::selectRaw('id, name, phone')->status()->orderByDesc('id')->get();
 
         $selected = Session::has('customer') ? Session::get('customer') : 0;
@@ -163,7 +163,7 @@ class OrderController extends Controller
         if(auth()->id() > 1) $this->authorize('seller.export');
 
         $users = Admin::selectRaw('id,name,email')->get();
-        $customers = User::selectRaw('id,name,account,phone')->get();
+        $customers = User::selectRaw('id,name,phone')->get();
         $agencys = UserAgency::status()->get()->pluck('name','id','phone');
         $products = Product::selectRaw('id,name,amount, price')->whereNotIn('id', $order->sessions()->pluck('product_id')->toArray())->public()->orderby('name', 'asc')->get();
         $array = $products->pluck('id')->toArray();
@@ -320,23 +320,25 @@ class OrderController extends Controller
 
         $product_session = new ProductSession();
         $session = ProductSession::find($id);
-        $order = Order::find($session->order_id);
         if(!$session) return 'error';
 
-        $product_session->updateAmountSessionEdit($session->product_id, $amount, $order);
+        $product_session->updateAmountSessionEdit($session->product_id, $amount, $session->export);
 
         //update số lượng sản phẩm
         $session->product()->update([
            'amount' =>  $session->product->amount + ($session->amount - $amount)
         ]);
+
         //update công nợ
-        $debt_old = $session->user->debt - $session->export->debt;
+        $debt_old = $session->user->debt -  $session->export->debt;
+
         $total = $session->export->total - ($session->amount * $session->price) + ($amount * $price);
         $debt = $total - $session->export->checkout;
         $session->user->increaseBalance($debt - $session->export->debt,'Cập nhật sản phẩm #'.$session->product->id.' - đơn hàng #'.$session->export->id, $session->export);
         $session->user()->update([
             'debt' => $debt_old + $debt
         ]);
+
         //$revenue = $price * $amount - $session->price_in * $amount;
         $revenue_export = $session->export->revenue - $session->revenue + $revenue;
         //update orders
@@ -363,6 +365,7 @@ class OrderController extends Controller
         if(!$session) return 'error';
 
         $product_session = new ProductSession();
+
         $product_session->updateAmountSessionDelete($session->product_id, $session->amount,$session->export);
         //update số lượng sản phẩm
         if($session->product){
