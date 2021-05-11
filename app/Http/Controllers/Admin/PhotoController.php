@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\MediaType;
 use App\Enums\SystemsModuleType;
 use App\Http\Controllers\Controller;
-use App\models\Photo;
+use App\Models\Photo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 

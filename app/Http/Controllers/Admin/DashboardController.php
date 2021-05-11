@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Auth;
 class DashboardController extends Controller {
 	public function index(){
 
-//            authorize(SystemsModuleType::DASHBOARD);
-
             $star = now()->startOfMonth();
             $end = now()->endOfMonth();
             $month = CarbonPeriod::create($star,$end);

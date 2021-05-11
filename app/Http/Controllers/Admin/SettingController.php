@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class SettingController extends Controller
 {
     public function index(){
-        if(auth()->id() > 1) $this->authorize('setting.view');
+        if(auth()->id() > 1) $this->authorize('setting.edit');
 
         return view('Admin.Setting.index');
     }

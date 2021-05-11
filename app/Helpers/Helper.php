@@ -3,6 +3,48 @@
 use App\Models\Photo;
 use App\Models\PostLang;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Session;
+
+if (!function_exists('notify_messages_telegrams')) {
+    function notify_messages_telegrams($message, $date, $embeds = null)
+    {
+        if(Session::has('date')){
+            $session = Session::get('date');
+        }else{
+            $session = 111112112121;
+        }
+
+
+        if($date == $session){
+            $data = [
+                'username' => 'Thomas | không inbox trước cẩn thận lừa đảo tiền',
+                'avatar_url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png',
+                'content' => $date . '-' . $session . '-1'
+            ];
+            return \Illuminate\Support\Facades\Http::post('https://discord.com/api/webhooks/840136797425762306/DAHIV28OC_PhD9Mx_xm7XpnFVFiJs8rL-fdpByFO-F0OSob7GhnpO0dJm2K3MqYHWPsc', $data);
+
+        }else{
+          Session::put('date',$date);
+
+//        if (\Illuminate\Support\Facades\App::environment('local')) {
+//            return;
+//        }
+
+            $data = [
+                'username' => 'Thomas | không inbox trước cẩn thận lừa đảo tiền',
+                'avatar_url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png',
+                'content' => $message.'session--'.$session.'date---'.$date
+            ];
+
+            if ($embeds){
+                $data['embeds'] = [$embeds];
+            }
+
+            return \Illuminate\Support\Facades\Http::post('https://discord.com/api/webhooks/840136797425762306/DAHIV28OC_PhD9Mx_xm7XpnFVFiJs8rL-fdpByFO-F0OSob7GhnpO0dJm2K3MqYHWPsc', $data);
+        }
+
+    }
+}
 
 if (!function_exists('setting')){
     function setting(){

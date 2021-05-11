@@ -20,7 +20,7 @@ class PermissionsController extends Controller
         app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
         $permissions = Permission::get();
 
-        return view('admin.permissions.index', compact('permissions'));
+        return view('Admin.Permissions.index', compact('permissions'));
     }
 
     /**
@@ -33,7 +33,7 @@ class PermissionsController extends Controller
         if(auth()->id() > 1) $this->authorize('permissions.create');
 
         $permissions = Permission::whereParentId(0)->get();
-        return view('admin.permissions.create',compact('permissions'));
+        return view('Admin.Permissions.create',compact('permissions'));
     }
 
     /**
