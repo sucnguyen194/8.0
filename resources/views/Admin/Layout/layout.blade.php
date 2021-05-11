@@ -534,6 +534,12 @@
 {{--<script src="/admin/assets/js/pages/toastr.init.js"></script>--}}
 @include('Errors.note')
 
+<style>
+    .clearfix {
+        clear: left;
+    }
+</style>
+
 <script type="text/javascript">
     function initEvents(){
         $('.tooltip-hover').each(function(){

@@ -39,7 +39,7 @@
                             <textarea class="form-control summernote" id="summernote" name="data[description]">{!! $gallery->description !!}</textarea>
                         </div>
                     </div>
-                    <div class="card-box position-relative box-action-image">
+                    <div class="card-box position-relative box-action-image float-left w-100 clearfix">
                         <label>Hình ảnh</label>
                         <div class="position-absolute font-weight-normal text-primary" id="box-input" style="right:2.2rem;top:1.3rem">
                             <label class="item-input">
@@ -47,7 +47,7 @@
                             </label>
                         </div>
                         <p class="font-13">* Định dạng ảnh jpg, jpeg, png, gif</p>
-                        <div class="dropzone pl-2 pr-2 pb-1">
+                        <div class="dropzone pl-2 pr-2 pb-1 float-left w-100">
                             <div class="dz-message text-center needsclick mb-2" v-if="photos.length == 0" id="remove-label">
                                 <label for="choiseImage" class="w-100 mb-0">
                                     <div class="icon-dropzone pt-2">
@@ -56,8 +56,8 @@
                                     <span class="text-muted font-13">Sử dụng nút <strong>Chọn ảnh</strong> để thêm ảnh</span>
                                 </label>
                             </div>
-                            <ul class="d-inline-block image-holder pl-0 mb-0 w-100 ui-sortable" id="sortable" v-if="photos.length > 0">
-                                <li v-for="item in photos" class="box-product-images" v-bind:id="item.id">
+                            <ul class="image-holder pl-0 mb-0 w-100 ui-sortable" id="sortable">
+                                <li v-for="item in photos" :key="item.id" class="box-product-images ui-sortable-handle d-inline-block" v-bind:id="item.id">
                                     <div class="item-image rounded position-relative">
                                         <div class="img-rounded"><img :src="asset + item.image" class="position-image-product"/></div>
                                         <div class="photo-hover-overlay rounded">
@@ -80,7 +80,7 @@
                         </div>
                     </div>
 
-                    <div class="card-box">
+                    <div class="card-box clearfix">
                         <div class="d-flex mb-2">
                             <label class="font-weight-bold">Tối ưu SEO</label>
                             <a href="javascript:void(0)" onclick="changeSeo()" class="edit-seo">Chỉnh sửa SEO</a>
