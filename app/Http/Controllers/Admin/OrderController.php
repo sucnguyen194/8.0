@@ -60,7 +60,7 @@ class OrderController extends Controller
     {
         if(auth()->id() > 1) $this->authorize('seller.export');
 
-        $products = Product::selectRaw('id, name, amount')->public()->orderby('name', 'asc')->get();
+        $products = Product::selectRaw('id, name, amount, price')->public()->orderby('name', 'asc')->get();
         $users = User::selectRaw('id,name,phone')->orderByDesc('id')->get();
         $agencys = UserAgency::selectRaw('id, name, phone')->status()->orderByDesc('id')->get();
 

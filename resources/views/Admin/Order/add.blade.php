@@ -39,7 +39,7 @@
                             <select class="form-control choise-product" id="products"  :disabled="customer == 0" v-model="product_id">
                                 <option value="0">--Chọn sản phẩm--</option>
                                 <option v-for="item in products" v-bind:value="item.id">
-                                    @{{ item.name }} (@{{  item.amount }})
+                                    @{{ item.name }} (SL: @{{  item.amount }}) (Giá: @{{ number_format(item.price) }})
                                 </option>
                             </select>
                             <p v-if="product_id == 0" class="text-danger mt-1">Vui lòng chọn sản phẩm</p>

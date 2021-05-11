@@ -67,7 +67,7 @@
                         <select class="form-control choise-product" id="products" :disabled="action.sessions.customer == 0" v-on:change="choiseProduct()" v-model="action.products.id">
                             <option value="0">--Chọn sản phẩm--</option>
                             <option v-for="item in products" v-bind:value="item.id">
-                                @{{ item.name }} (@{{  item.amount }})
+                                @{{ item.name }} (SL: @{{  item.amount }}) (Giá: @{{ number_format(item.price) }})
                             </option>
                         </select>
                         <p v-if="action.products.id == 0" class="text-danger mt-1">Vui lòng chọn sản phẩm</p>
@@ -853,7 +853,6 @@
                 products: {
                     id: {{@$product->id ?? 0}},
                     name: '{{@$product->name}}',
-                    name: '{{@$product->price}}',
                     price_in: '{{@$price_in}}',
                     price_buy: '{{@$price}}',
                     max: {{@$product->amount ?? 1}},
